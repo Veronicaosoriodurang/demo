@@ -1,28 +1,48 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.Habitacion;
+import com.example.demo.model.EstadoHabitacion;
 import com.example.demo.service.HabitacionService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api/habitaciones")
+@RequiredArgsConstructor
 public class HabitacionController {
 
     private final HabitacionService habitacionService;
 
-    public HabitacionController(HabitacionService habitacionService) {
-        this.habitacionService = habitacionService;
+    @GetMapping
+    public List<Habitacion> listar() {
+        return habitacionService.listarTodas();
     }
 
-    @GetMapping("/habitaciones")
-    public List<Habitacion> listarHabitaciones(){
-        return habitacionService.obtenerHabitaciones();
+    @GetMapping("/{id}")
+    public ResponseEntity<Habitacion> buscar(@PathVariable Long id) {
+        return ResponseEntity.ok(habitacionService.buscarPorId(id));
     }
 
-    @GetMapping("/habitaciones/disponibles")
-    public List<Habitacion> verDisponibles(){
-        return habitacionService.habitacionesDisponibles();
+    @GetMapping("/estado/{estado}")
+    public List<Habitacion> porEstado(@PathVariable EstadoHabitacion estado) {
+        return habitacionService.listarPorEstado(estado);
+    }
+
+    @PostMapping
+    public ResponseEntity<Habitacion> crear(@RequestBody Habitacion habitacion) {
+        return ResponseEntity.ok(habitacionService.guardar(habitacion));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Habitacion> actualizar(@PathVariable Long id, @RequestBody Habitacion habitacion) {
+        return ResponseEntity.ok(habitacionService.actualizar(id, habitacion));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+        habitacionService.eliminar(id);
+        return ResponseEntity.noContent().build();
     }
 }

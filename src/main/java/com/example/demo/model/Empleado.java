@@ -4,17 +4,20 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "pisos")
+@Table(name = "empleados")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Piso {
+public class Empleado {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Integer numero;
-    private String descripcion;
+    private String nombre;
+    private String apellido;
+    private String cargo;
+    private String email;
+    private Double salario;
 }

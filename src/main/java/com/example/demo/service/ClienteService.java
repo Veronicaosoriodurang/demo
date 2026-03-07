@@ -1,20 +1,35 @@
 package com.example.demo.service;
 
 import com.example.demo.model.Cliente;
+import com.example.demo.repository.ClienteRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ClienteService {
 
-    private List<Cliente> clientes = new ArrayList<>();
+    private final ClienteRepository clienteRepository;
 
-    public void registrarCliente(Cliente cliente){
-        clientes.add(cliente);
+    public List<Cliente> listarTodos() {
+        return clienteRepository.findAll();
     }
 
-    public List<Cliente> obtenerClientes(){
-        return clientes;
+    public Cliente buscarPorId(Long id) {
+        return clienteRepository.findById(id).orElseThrow();
+    }
+
+    public Cliente guardar(Cliente cliente) {
+        return clienteRepository.save(cliente);
+    }
+
+    public Cliente actualizar(Long id, Cliente cliente) {
+        cliente.setId(id);
+        return clienteRepository.save(cliente);
+    }
+
+    public void eliminar(Long id) {
+        clienteRepository.deleteById(id);
     }
 }

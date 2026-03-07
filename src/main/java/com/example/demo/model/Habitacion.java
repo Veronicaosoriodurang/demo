@@ -1,19 +1,32 @@
 package com.example.demo.model;
 
+import jakarta.persistence.*;
+import lombok.*;
+
+@Entity
+@Table(name = "habitaciones")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Habitacion {
 
-    private int numero;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String numero;
     private String tipo;
-    private boolean disponible;
-    private double precio;
+    private Double precioPorNoche;
 
-    public Habitacion() {}
+    @ManyToOne
+    @JoinColumn(name = "piso_id")
+    private Piso piso;
 
-    public Habitacion(int numero, String tipo, boolean disponible, double precio) {
-        this.numero = numero;
-        this.tipo = tipo;
-        this.disponible = disponible;
-        this.precio = precio;
-    }
+    @Enumerated(EnumType.STRING)
+    private EstadoHabitacion estado;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "disponibilidad_id")
+    private Disponibilidad disponibilidad;
 }

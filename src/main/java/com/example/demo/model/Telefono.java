@@ -1,41 +1,20 @@
 package com.example.demo.model;
 
+import jakarta.persistence.*;
+import lombok.*;
+
+@Entity
+@Table(name = "telefonos")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Telefono {
 
-    private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String numero;
     private String tipo;
-
-    public Telefono() {
-    }
-
-    public Telefono(int id, String numero, String tipo) {
-        this.id = id;
-        this.numero = numero;
-        this.tipo = tipo;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getNumero() {
-        return numero;
-    }
-
-    public void setNumero(String numero) {
-        this.numero = numero;
-    }
-
-    public String getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
-    }
 }

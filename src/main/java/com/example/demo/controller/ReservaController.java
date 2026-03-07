@@ -2,27 +2,47 @@ package com.example.demo.controller;
 
 import com.example.demo.model.Reserva;
 import com.example.demo.service.ReservaService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
+@RequestMapping("/api/reservas")
+@RequiredArgsConstructor
 public class ReservaController {
 
     private final ReservaService reservaService;
 
-    public ReservaController(ReservaService reservaService) {
-        this.reservaService = reservaService;
+    @GetMapping
+    public List<Reserva> listar() {
+        return reservaService.listarTodas();
     }
 
-    @PostMapping("/reservas")
-    public String crearReserva(@RequestBody Reserva reserva){
-        reservaService.crearReserva(reserva);
-        return "Reserva creada correctamente";
+    @GetMapping("/{id}")
+    public ResponseEntity<Reserva> buscar(@PathVariable Long id) {
+        return ResponseEntity.ok(reservaService.buscarPorId(id));
     }
 
-    @GetMapping("/reservas")
-    public List<Reserva> verReservas(){
-        return reservaService.obtenerReservas();
+    @GetMapping("/cliente/{clienteId}")
+    public List<Reserva> porCliente(@PathVariable Long clienteId) {
+        return reservaService.listarPorCliente(clienteId);
+    }
+
+    @PostMapping
+    public ResponseEntity<Reserva> crear(@RequestBody Reserva reserva) {
+        return ResponseEntity.ok(reservaService.guardar(reserva));
+    }
+
+    @PutMapping("/{id}/cancelar")
+    public ResponseEntity<Void> cancelar(@PathVariable Long id) {
+        reservaService.cancelar(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+        reservaService.eliminar(id);
+        return ResponseEntity.noContent().build();
     }
 }

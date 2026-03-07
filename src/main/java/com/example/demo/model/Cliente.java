@@ -1,32 +1,34 @@
 package com.example.demo.model;
 
+import jakarta.persistence.*;
+import lombok.*;
 import java.util.List;
 
+@Entity
+@Table(name = "clientes")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Cliente {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String nombre;
-    private String documento;
-    private String telefono;
+    private String apellido;
+    private String email;
 
-    private List<Reserva> reservas;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "documento_id")
+    private Documento documento;
 
-    public Cliente() {}
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "cliente_id")
+    private List<Telefono> telefonos;
 
-    public Cliente(String nombre, String documento, String telefono) {
-        this.nombre = nombre;
-        this.documento = documento;
-        this.telefono = telefono;
-    }
-
-    public List<Reserva> getReservas() {
-        return reservas;
-    }
-
-    public void setReservas(List<Reserva> reservas) {
-        this.reservas = reservas;
-    }
-
-    public String getNombre() { return nombre; }
-    public String getDocumento() { return documento; }
-    public String getTelefono() { return telefono; }
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "direccion_id")
+    private Direccion direccion;
 }

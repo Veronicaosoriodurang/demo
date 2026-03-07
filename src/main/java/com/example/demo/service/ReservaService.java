@@ -1,20 +1,40 @@
 package com.example.demo.service;
 
 import com.example.demo.model.Reserva;
+import com.example.demo.repository.ReservaRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ReservaService {
 
-    private List<Reserva> reservas = new ArrayList<>();
+    private final ReservaRepository reservaRepository;
 
-    public void crearReserva(Reserva reserva){
-        reservas.add(reserva);
+    public List<Reserva> listarTodas() {
+        return reservaRepository.findAll();
     }
 
-    public List<Reserva> obtenerReservas(){
-        return reservas;
+    public Reserva buscarPorId(Long id) {
+        return reservaRepository.findById(id).orElseThrow();
+    }
+
+    public List<Reserva> listarPorCliente(Long clienteId) {
+        return reservaRepository.findByClienteId(clienteId);
+    }
+
+    public Reserva guardar(Reserva reserva) {
+        return reservaRepository.save(reserva);
+    }
+
+    public void cancelar(Long id) {
+        Reserva reserva = buscarPorId(id);
+        reserva.setEstado("CANCELADA");
+        reservaRepository.save(reserva);
+    }
+
+    public void eliminar(Long id) {
+        reservaRepository.deleteById(id);
     }
 }

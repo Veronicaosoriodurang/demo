@@ -4,17 +4,18 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "pisos")
+@Table(name = "servicios_hotel")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Piso {
+public class ServicioHotel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Integer numero;
+    private String nombre;
     private String descripcion;
+    private Double precio;
 }
