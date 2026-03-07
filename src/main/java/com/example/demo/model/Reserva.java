@@ -3,36 +3,29 @@ package com.example.demo.model;
 public class Reserva {
 
     private int id;
-    private String cliente;
-    private int numeroHabitacion;
+
+    private Cliente cliente;
+    private Habitacion habitacion;
+    private Pago pago;
+
     private String fechaEntrada;
     private String fechaSalida;
 
-    public Reserva(int id, String cliente, int numeroHabitacion, String fechaEntrada, String fechaSalida) {
+    public Reserva() {}
+
+    public Reserva(int id, Cliente cliente, Habitacion habitacion, String fechaEntrada, String fechaSalida) {
         this.id = id;
         this.cliente = cliente;
-        this.numeroHabitacion = numeroHabitacion;
+        this.habitacion = habitacion;
         this.fechaEntrada = fechaEntrada;
         this.fechaSalida = fechaSalida;
     }
 
-    public int getId() {
-        return id;
-    }
+    public Cliente getCliente() { return cliente; }
+    public Habitacion getHabitacion() { return habitacion; }
+    public Pago getPago() { return pago; }
 
-    public String getCliente() {
-        return cliente;
-    }
-
-    public int getNumeroHabitacion() {
-        return numeroHabitacion;
-    }
-
-    public String getFechaEntrada() {
-        return fechaEntrada;
-    }
-
-    public String getFechaSalida() {
-        return fechaSalida;
-    }
+    public void setCliente(Cliente cliente) { this.cliente = cliente; }
+    public void setHabitacion(Habitacion habitacion) { this.habitacion = habitacion; }
+    public void setPago(Pago pago) { this.pago = pago; }
 }

@@ -7,6 +7,8 @@ public class Habitacion {
     private boolean disponible;
     private double precio;
 
+    public Habitacion() {}
+
     public Habitacion(int numero, String tipo, boolean disponible, double precio) {
         this.numero = numero;
         this.tipo = tipo;
@@ -14,23 +16,4 @@ public class Habitacion {
         this.precio = precio;
     }
 
-    public int getNumero() {
-        return numero;
-    }
-
-    public String getTipo() {
-        return tipo;
-    }
-
-    public boolean isDisponible() {
-        return disponible;
-    }
-
-    public double getPrecio() {
-        return precio;
-    }
-
-    public void setDisponible(boolean disponible) {
-        this.disponible = disponible;
-    }
 }

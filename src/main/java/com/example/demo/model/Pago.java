@@ -3,24 +3,23 @@ package com.example.demo.model;
 public class Pago {
 
     private int id;
-    private String cliente;
     private double monto;
 
-    public Pago(int id, String cliente, double monto) {
+    private MetodoPago metodoPago;
+
+    public Pago() {}
+
+    public Pago(int id, double monto, MetodoPago metodoPago) {
         this.id = id;
-        this.cliente = cliente;
         this.monto = monto;
+        this.metodoPago = metodoPago;
     }
 
-    public int getId() {
-        return id;
+    public MetodoPago getMetodoPago() {
+        return metodoPago;
     }
 
-    public String getCliente() {
-        return cliente;
-    }
-
-    public double getMonto() {
-        return monto;
+    public void setMetodoPago(MetodoPago metodoPago) {
+        this.metodoPago = metodoPago;
     }
 }
