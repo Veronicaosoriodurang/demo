@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hotel Management System</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C97A;
+    --dark: #0D0D0D;
+    --dark2: #1A1A1A;
+    --dark3: #252525;
+    --cream: #F5F0E8;
+    --text: #E8E0D0;
+    --text-muted: #8A8070;
+    --success: #4CAF82;
+    --danger: #CF6679;
+    --info: #5B8FD4;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--dark);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse at 20% 20%, rgba(201,168,76,0.05) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(201,168,76,0.03) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    position: fixed;
+    left: 0; top: 0; bottom: 0;
+    width: 260px;
+    background: var(--dark2);
+    border-right: 1px solid rgba(201,168,76,0.15);
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    padding: 0 0 24px;
+  }
+
+  .logo {
+    padding: 32px 28px 28px;
+    border-bottom: 1px solid rgba(201,168,76,0.1);
+  }
+
+  .logo-icon {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+
+  .logo h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--cream);
+    line-height: 1.2;
+  }
+
+  .logo p {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .nav {
+    flex: 1;
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .nav-section {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 12px 12px 6px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text-muted);
+    border: 1px solid transparent;
+  }
+
+  .nav-item:hover {
+    background: rgba(201,168,76,0.08);
+    color: var(--text);
+  }
+
+  .nav-item.active {
+    background: rgba(201,168,76,0.12);
+    color: var(--gold);
+    border-color: rgba(201,168,76,0.2);
+    font-weight: 500;
+  }
+
+  .nav-item .icon { font-size: 18px; width: 22px; text-align: center; }
+
+  /* MAIN */
+  .main {
+    margin-left: 260px;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* HEADER */
+  .header {
+    padding: 28px 40px 20px;
+    border-bottom: 1px solid rgba(201,168,76,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(13,13,13,0.8);
+    backdrop-filter: blur(10px);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+
+  .header-title h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--cream);
+  }
+
+  .header-title p {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .status-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: rgba(76,175,130,0.1);
+    border: 1px solid rgba(76,175,130,0.25);
+    border-radius: 20px;
+    font-size: 12px;
+    color: var(--success);
+  }
+
+  .status-dot {
+    width: 6px; height: 6px;
+    background: var(--success);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* CONTENT */
+  .content {
+    padding: 32px 40px;
+  }
+
+  /* SECTION */
+  .section { display: none; animation: fadeIn 0.3s ease; }
+  .section.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* STATS */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .stat-card {
+    background: var(--dark2);
+    border: 1px solid rgba(201,168,76,0.12);
+    border-radius: 14px;
+    padding: 20px 22px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .stat-card:hover { border-color: rgba(201,168,76,0.3); }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 60px; height: 60px;
+    background: radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%);
+  }
+
+  .stat-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  .stat-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--gold);
+  }
+
+  .stat-icon {
+    position: absolute;
+    top: 18px; right: 18px;
+    font-size: 22px;
+    opacity: 0.4;
+  }
+
+  /* CARD */
+  .card {
+    background: var(--dark2);
+    border: 1px solid rgba(201,168,76,0.12);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+
+  .card-header {
+    padding: 18px 24px;
+    border-bottom: 1px solid rgba(201,168,76,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    color: var(--cream);
+  }
+
+  /* FORM */
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+    padding: 20px 24px;
+  }
+
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+
+  .form-group label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+  }
+
+  .form-group input,
+  .form-group select {
+    background: var(--dark3);
+    border: 1px solid rgba(201,168,76,0.15);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus {
+    border-color: var(--gold);
+  }
+
+  .form-group select option { background: var(--dark3); }
+
+  .form-actions {
+    padding: 16px 24px 20px;
+    display: flex;
+    gap: 10px;
+  }
+
+  /* BUTTONS */
+  .btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .btn-gold {
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    color: var(--dark);
+  }
+
+  .btn-gold:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(201,168,76,0.3); }
+
+  .btn-outline {
+    background: transparent;
+    border: 1px solid rgba(201,168,76,0.3);
+    color: var(--gold);
+  }
+
+  .btn-outline:hover { background: rgba(201,168,76,0.08); }
+
+  .btn-danger {
+    background: rgba(207,102,121,0.15);
+    border: 1px solid rgba(207,102,121,0.3);
+    color: var(--danger);
+  }
+
+  .btn-danger:hover { background: rgba(207,102,121,0.25); }
+
+  .btn-success {
+    background: rgba(76,175,130,0.15);
+    border: 1px solid rgba(76,175,130,0.3);
+    color: var(--success);
+  }
+
+  .btn-success:hover { background: rgba(76,175,130,0.25); }
+
+  .btn-sm { padding: 6px 12px; font-size: 12px; }
+
+  /* TABLE */
+  .table-container { overflow-x: auto; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead tr {
+    border-bottom: 1px solid rgba(201,168,76,0.15);
+  }
+
+  th {
+    padding: 12px 20px;
+    text-align: left;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  td {
+    padding: 14px 20px;
+    font-size: 13px;
+    color: var(--text);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  tr:hover td { background: rgba(201,168,76,0.03); }
+  tr:last-child td { border-bottom: none; }
+
+  /* BADGE */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+  }
+
+  .badge-green { background: rgba(76,175,130,0.15); color: var(--success); border: 1px solid rgba(76,175,130,0.2); }
+  .badge-red { background: rgba(207,102,121,0.15); color: var(--danger); border: 1px solid rgba(207,102,121,0.2); }
+  .badge-gold { background: rgba(201,168,76,0.15); color: var(--gold); border: 1px solid rgba(201,168,76,0.2); }
+  .badge-blue { background: rgba(91,143,212,0.15); color: var(--info); border: 1px solid rgba(91,143,212,0.2); }
+
+  /* TOAST */
+  .toast-container {
+    position: fixed;
+    top: 24px; right: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 9999;
+  }
+
+  .toast {
+    padding: 12px 18px;
+    border-radius: 10px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: slideIn 0.3s ease;
+    min-width: 260px;
+  }
+
+  @keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  .toast-success { background: rgba(76,175,130,0.95); color: white; }
+  .toast-error { background: rgba(207,102,121,0.95); color: white; }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 48px 20px;
+    color: var(--text-muted);
+  }
+
+  .empty-state .empty-icon { font-size: 40px; margin-bottom: 12px; opacity: 0.4; }
+  .empty-state p { font-size: 14px; }
+
+  /* CHECKIN CARDS */
+  .checkin-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding: 20px 24px;
+  }
+
+  .checkin-box {
+    background: var(--dark3);
+    border-radius: 12px;
+    padding: 24px;
+    border: 1px solid rgba(201,168,76,0.1);
+  }
+
+  .checkin-box h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    color: var(--cream);
+    margin-bottom: 6px;
+  }
+
+  .checkin-box p {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 18px;
+  }
+
+  .loading {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border: 2px solid rgba(201,168,76,0.3);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-icon">🏨</div>
+    <h1>Grand Hotel</h1>
+    <p>Management System</p>
+  </div>
+  <nav class="nav">
+    <div class="nav-section">Principal</div>
+    <div class="nav-item active" onclick="showSection('habitaciones')">
+      <span class="icon">🛏️</span> Habitaciones
+    </div>
+    <div class="nav-item" onclick="showSection('reservas')">
+      <span class="icon">📅</span> Reservas
+    </div>
+    <div class="nav-section">Operaciones</div>
+    <div class="nav-item" onclick="showSection('checkin')">
+      <span class="icon">✅</span> Check In / Out
+    </div>
+    <div class="nav-item" onclick="showSection('pagos')">
+      <span class="icon">💳</span> Pagos
+    </div>
+    <div class="nav-item" onclick="showSection('facturas')">
+      <span class="icon">🧾</span> Facturas
+    </div>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <header class="header">
+    <div class="header-title">
+      <h2 id="pageTitle">Habitaciones</h2>
+      <p id="pageSubtitle">Gestiona las habitaciones del hotel</p>
+    </div>
+    <div class="header-actions">
+      <div class="status-badge">
+        <div class="status-dot"></div>
+        API Conectada
+      </div>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- HABITACIONES -->
+    <section class="section active" id="section-habitaciones">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total Habitaciones</div>
+          <div class="stat-value" id="statTotal">—</div>
+          <div class="stat-icon">🏨</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Disponibles</div>
+          <div class="stat-value" id="statDisp">—</div>
+          <div class="stat-icon">✅</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Ocupadas</div>
+          <div class="stat-value" id="statOcup">—</div>
+          <div class="stat-icon">🔒</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Nueva Habitación</span>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Número</label>
+            <input type="text" id="habNumero" placeholder="101">
+          </div>
+          <div class="form-group">
+            <label>Tipo</label>
+            <select id="habTipo">
+              <option>Simple</option>
+              <option>Doble</option>
+              <option>Suite</option>
+              <option>Presidencial</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Precio por Noche</label>
+            <input type="number" id="habPrecio" placeholder="150000">
+          </div>
+          <div class="form-group">
+            <label>Estado</label>
+            <select id="habEstado">
+              <option value="DISPONIBLE">Disponible</option>
+              <option value="MANTENIMIENTO">Mantenimiento</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-gold" onclick="crearHabitacion()">➕ Crear Habitación</button>
+          <button class="btn btn-outline" onclick="cargarHabitaciones()">🔄 Actualizar</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Lista de Habitaciones</span>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Número</th>
+                <th>Tipo</th>
+                <th>Precio/Noche</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tablaHabitaciones">
+              <tr><td colspan="6"><div class="empty-state"><div class="empty-icon">🛏️</div><p>Cargando habitaciones...</p></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESERVAS -->
+    <section class="section" id="section-reservas">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Nueva Reserva</span>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>ID Cliente</label>
+            <input type="number" id="resCliente" placeholder="1">
+          </div>
+          <div class="form-group">
+            <label>ID Habitación</label>
+            <input type="number" id="resHabitacion" placeholder="1">
+          </div>
+          <div class="form-group">
+            <label>Fecha Entrada</label>
+            <input type="date" id="resFechaEntrada">
+          </div>
+          <div class="form-group">
+            <label>Fecha Salida</label>
+            <input type="date" id="resFechaSalida">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-gold" onclick="crearReserva()">➕ Crear Reserva</button>
+          <button class="btn btn-outline" onclick="cargarReservas()">🔄 Actualizar</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Lista de Reservas</span>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Cliente</th>
+                <th>Habitación</th>
+                <th>Entrada</th>
+                <th>Salida</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tablaReservas">
+              <tr><td colspan="7"><div class="empty-state"><div class="empty-icon">📅</div><p>Cargando reservas...</p></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- CHECKIN -->
+    <section class="section" id="section-checkin">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Gestión de Check In / Check Out</span>
+        </div>
+        <div class="checkin-grid">
+          <div class="checkin-box">
+            <h3>✅ Check In</h3>
+            <p>Registra la llegada del huésped y activa la reserva</p>
+            <div class="form-group" style="margin-bottom:16px">
+              <label>ID de Reserva</label>
+              <input type="number" id="checkInId" placeholder="Ej: 1">
+            </div>
+            <button class="btn btn-success" onclick="realizarCheckIn()">Realizar Check In</button>
+          </div>
+          <div class="checkin-box">
+            <h3>🚪 Check Out</h3>
+            <p>Registra la salida del huésped y libera la habitación</p>
+            <div class="form-group" style="margin-bottom:16px">
+              <label>ID de Reserva</label>
+              <input type="number" id="checkOutId" placeholder="Ej: 1">
+            </div>
+            <button class="btn btn-danger" onclick="realizarCheckOut()">Realizar Check Out</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Reservas Activas</span>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr><th>ID</th><th>Cliente ID</th><th>Habitación</th><th>Entrada</th><th>Salida</th><th>Estado</th></tr>
+            </thead>
+            <tbody id="tablaReservasActivas">
+              <tr><td colspan="6"><div class="empty-state"><div class="empty-icon">✅</div><p>Cargando...</p></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGOS -->
+    <section class="section" id="section-pagos">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Registrar Pago</span>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>ID Reserva</label>
+            <input type="number" id="pagoReserva" placeholder="1">
+          </div>
+          <div class="form-group">
+            <label>Monto</label>
+            <input type="number" id="pagoMonto" placeholder="450000">
+          </div>
+          <div class="form-group">
+            <label>Método de Pago</label>
+            <select id="pagoMetodo">
+              <option value="EFECTIVO">Efectivo</option>
+              <option value="TARJETA_CREDITO">Tarjeta Crédito</option>
+              <option value="TARJETA_DEBITO">Tarjeta Débito</option>
+              <option value="TRANSFERENCIA">Transferencia</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-gold" onclick="registrarPago()">💳 Registrar Pago</button>
+          <button class="btn btn-outline" onclick="cargarPagos()">🔄 Actualizar</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Historial de Pagos</span>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr><th>ID</th><th>Reserva ID</th><th>Monto</th><th>Método</th><th>Fecha</th><th>Acciones</th></tr>
+            </thead>
+            <tbody id="tablaPagos">
+              <tr><td colspan="6"><div class="empty-state"><div class="empty-icon">💳</div><p>Cargando pagos...</p></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- FACTURAS -->
+    <section class="section" id="section-facturas">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Generar Factura</span>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>ID Reserva</label>
+            <input type="number" id="factReserva" placeholder="1">
+          </div>
+          <div class="form-group">
+            <label>Total</label>
+            <input type="number" id="factTotal" placeholder="450000">
+          </div>
+          <div class="form-group">
+            <label>Fecha Emisión</label>
+            <input type="date" id="factFecha">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-gold" onclick="generarFactura()">🧾 Generar Factura</button>
+          <button class="btn btn-outline" onclick="cargarFacturas()">🔄 Actualizar</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Facturas Emitidas</span>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr><th>ID</th><th>Reserva ID</th><th>Total</th><th>Fecha Emisión</th><th>Acciones</th></tr>
+            </thead>
+            <tbody id="tablaFacturas">
+              <tr><td colspan="5"><div class="empty-state"><div class="empty-icon">🧾</div><p>Cargando facturas...</p></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<script>
+  // ─── CONFIG ───
+  const API = 'https://demo-sxqtekrl.b4a.run';
+
+  const sections = {
+    habitaciones: { title: 'Habitaciones', subtitle: 'Gestiona las habitaciones del hotel' },
+    reservas: { title: 'Reservas', subtitle: 'Administra las reservas de huéspedes' },
+    checkin: { title: 'Check In / Check Out', subtitle: 'Gestiona llegadas y salidas' },
+    pagos: { title: 'Pagos', subtitle: 'Registro y control de pagos' },
+    facturas: { title: 'Facturas', subtitle: 'Emisión y gestión de facturas' },
+  };
+
+  function showSection(name) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('section-' + name).classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(n => {
+      if (n.getAttribute('onclick').includes(name)) n.classList.add('active');
+    });
+    document.getElementById('pageTitle').textContent = sections[name].title;
+    document.getElementById('pageSubtitle').textContent = sections[name].subtitle;
+    if (name === 'habitaciones') cargarHabitaciones();
+    if (name === 'reservas') cargarReservas();
+    if (name === 'checkin') cargarReservasActivas();
+    if (name === 'pagos') cargarPagos();
+    if (name === 'facturas') cargarFacturas();
+  }
+
+  // ─── TOAST ───
+  function toast(msg, type = 'success') {
+    const t = document.createElement('div');
+    t.className = `toast toast-${type}`;
+    t.innerHTML = `${type === 'success' ? '✅' : '❌'} ${msg}`;
+    document.getElementById('toastContainer').appendChild(t);
+    setTimeout(() => t.remove(), 3500);
+  }
+
+  // ─── API HELPERS ───
+  async function get(url) {
+    const r = await fetch(API + url);
+    return r.json();
+  }
+
+  async function post(url, data) {
+    const r = await fetch(API + url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    if (!r.ok) throw new Error(await r.text());
+    return r.json();
+  }
+
+  async function del(url) {
+    const r = await fetch(API + url, { method: 'DELETE' });
+    if (!r.ok) throw new Error('Error al eliminar');
+  }
+
+  // ─── BADGE ───
+  function estadoBadge(estado) {
+    const map = {
+      DISPONIBLE: 'badge-green', OCUPADA: 'badge-red',
+      RESERVADA: 'badge-gold', MANTENIMIENTO: 'badge-blue',
+      CONFIRMADA: 'badge-gold', ACTIVA: 'badge-green',
+      FINALIZADA: 'badge-blue', CANCELADA: 'badge-red',
+      PENDIENTE: 'badge-blue'
+    };
+    return `<span class="badge ${map[estado] || 'badge-gold'}">${estado}</span>`;
+  }
+
+  // ─── HABITACIONES ───
+  async function cargarHabitaciones() {
+    try {
+      const data = await get('/api/habitaciones');
+      const total = data.length;
+      const disp = data.filter(h => h.estado === 'DISPONIBLE').length;
+      const ocup = data.filter(h => h.estado === 'OCUPADA').length;
+      document.getElementById('statTotal').textContent = total;
+      document.getElementById('statDisp').textContent = disp;
+      document.getElementById('statOcup').textContent = ocup;
+
+      const tbody = document.getElementById('tablaHabitaciones');
+      if (!data.length) {
+        tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">🛏️</div><p>No hay habitaciones registradas</p></div></td></tr>';
+        return;
+      }
+      tbody.innerHTML = data.map(h => `
+        <tr>
+          <td><span style="color:var(--text-muted)">#${h.id}</span></td>
+          <td><strong>${h.numero}</strong></td>
+          <td>${h.tipo}</td>
+          <td>$${h.precioPorNoche?.toLocaleString()}</td>
+          <td>${estadoBadge(h.estado)}</td>
+          <td>
+            <button class="btn btn-danger btn-sm" onclick="eliminarHabitacion(${h.id})">🗑️</button>
+          </td>
+        </tr>
+      `).join('');
+    } catch(e) {
+      toast('Error al cargar habitaciones', 'error');
+    }
+  }
+
+  async function crearHabitacion() {
+    const numero = document.getElementById('habNumero').value;
+    const tipo = document.getElementById('habTipo').value;
+    const precio = parseFloat(document.getElementById('habPrecio').value);
+    const estado = document.getElementById('habEstado').value;
+    if (!numero || !precio) return toast('Completa todos los campos', 'error');
+    try {
+      await post('/api/habitaciones', { numero, tipo, precioPorNoche: precio, estado });
+      toast('Habitación creada exitosamente');
+      document.getElementById('habNumero').value = '';
+      document.getElementById('habPrecio').value = '';
+      cargarHabitaciones();
+    } catch(e) { toast('Error al crear habitación', 'error'); }
+  }
+
+  async function eliminarHabitacion(id) {
+    if (!confirm('¿Eliminar habitación #' + id + '?')) return;
+    try {
+      await del('/api/habitaciones/' + id);
+      toast('Habitación eliminada');
+      cargarHabitaciones();
+    } catch(e) { toast('Error al eliminar', 'error'); }
+  }
+
+  // ─── RESERVAS ───
+  async function cargarReservas() {
+    try {
+      const data = await get('/api/reservas');
+      const tbody = document.getElementById('tablaReservas');
+      if (!data.length) {
+        tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">📅</div><p>No hay reservas registradas</p></div></td></tr>';
+        return;
+      }
+      tbody.innerHTML = data.map(r => `
+        <tr>
+          <td><span style="color:var(--text-muted)">#${r.id}</span></td>
+          <td>${r.cliente?.nombre || 'ID: ' + r.cliente?.id || '—'}</td>
+          <td>Hab. ${r.habitacion?.numero || r.habitacion?.id || '—'}</td>
+          <td>${r.fechaEntrada}</td>
+          <td>${r.fechaSalida}</td>
+          <td>${estadoBadge(r.estado)}</td>
+          <td>
+            <button class="btn btn-danger btn-sm" onclick="cancelarReserva(${r.id})">❌ Cancelar</button>
+          </td>
+        </tr>
+      `).join('');
+    } catch(e) { toast('Error al cargar reservas', 'error'); }
+  }
+
+  async function crearReserva() {
+    const clienteId = parseInt(document.getElementById('resCliente').value);
+    const habId = parseInt(document.getElementById('resHabitacion').value);
+    const entrada = document.getElementById('resFechaEntrada').value;
+    const salida = document.getElementById('resFechaSalida').value;
+    if (!clienteId || !habId || !entrada || !salida) return toast('Completa todos los campos', 'error');
+    try {
+      await post('/api/reservas', {
+        fechaEntrada: entrada, fechaSalida: salida,
+        estado: 'CONFIRMADA',
+        cliente: { id: clienteId },
+        habitacion: { id: habId }
+      });
+      toast('Reserva creada exitosamente');
+      document.getElementById('resCliente').value = '';
+      document.getElementById('resHabitacion').value = '';
+      cargarReservas();
+    } catch(e) { toast('Error al crear reserva', 'error'); }
+  }
+
+  async function cancelarReserva(id) {
+    if (!confirm('¿Cancelar reserva #' + id + '?')) return;
+    try {
+      await fetch(API + '/api/reservas/' + id + '/cancelar', { method: 'PUT' });
+      toast('Reserva cancelada');
+      cargarReservas();
+    } catch(e) { toast('Error al cancelar', 'error'); }
+  }
+
+  // ─── CHECKIN ───
+  async function cargarReservasActivas() {
+    try {
+      const data = await get('/api/reservas');
+      const activas = data.filter(r => ['CONFIRMADA','ACTIVA'].includes(r.estado));
+      const tbody = document.getElementById('tablaReservasActivas');
+      if (!activas.length) {
+        tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">✅</div><p>No hay reservas activas</p></div></td></tr>';
+        return;
+      }
+      tbody.innerHTML = activas.map(r => `
+        <tr>
+          <td><strong>#${r.id}</strong></td>
+          <td>${r.cliente?.id || '—'}</td>
+          <td>Hab. ${r.habitacion?.numero || r.habitacion?.id || '—'}</td>
+          <td>${r.fechaEntrada}</td>
+          <td>${r.fechaSalida}</td>
+          <td>${estadoBadge(r.estado)}</td>
+        </tr>
+      `).join('');
+    } catch(e) {}
+  }
+
+  async function realizarCheckIn() {
+    const id = document.getElementById('checkInId').value;
+    if (!id) return toast('Ingresa el ID de reserva', 'error');
+    try {
+      await post('/api/checkin/' + id, {});
+      toast('Check In realizado — Habitación ocupada');
+      document.getElementById('checkInId').value = '';
+      cargarReservasActivas();
+    } catch(e) { toast('Error en Check In', 'error'); }
+  }
+
+  async function realizarCheckOut() {
+    const id = document.getElementById('checkOutId').value;
+    if (!id) return toast('Ingresa el ID de reserva', 'error');
+    try {
+      await post('/api/checkout/' + id, {});
+      toast('Check Out realizado — Habitación disponible');
+      document.getElementById('checkOutId').value = '';
+      cargarReservasActivas();
+    } catch(e) { toast('Error en Check Out', 'error'); }
+  }
+
+  // ─── PAGOS ───
+  async function cargarPagos() {
+    try {
+      const data = await get('/api/pagos');
+      const tbody = document.getElementById('tablaPagos');
+      if (!data.length) {
+        tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">💳</div><p>No hay pagos registrados</p></div></td></tr>';
+        return;
+      }
+      tbody.innerHTML = data.map(p => `
+        <tr>
+          <td><span style="color:var(--text-muted)">#${p.id}</span></td>
+          <td>Reserva #${p.reserva?.id || '—'}</td>
+          <td><strong>$${p.monto?.toLocaleString()}</strong></td>
+          <td>${p.metodoPago?.replace('_',' ')}</td>
+          <td>${p.fechaPago ? p.fechaPago.substring(0,10) : '—'}</td>
+          <td><button class="btn btn-danger btn-sm" onclick="eliminarPago(${p.id})">🗑️</button></td>
+        </tr>
+      `).join('');
+    } catch(e) { toast('Error al cargar pagos', 'error'); }
+  }
+
+  async function registrarPago() {
+    const reservaId = parseInt(document.getElementById('pagoReserva').value);
+    const monto = parseFloat(document.getElementById('pagoMonto').value);
+    const metodoPago = document.getElementById('pagoMetodo').value;
+    if (!reservaId || !monto) return toast('Completa todos los campos', 'error');
+    try {
+      await post('/api/pagos', {
+        monto, metodoPago,
+        fechaPago: new Date().toISOString(),
+        reserva: { id: reservaId }
+      });
+      toast('Pago registrado exitosamente');
+      document.getElementById('pagoReserva').value = '';
+      document.getElementById('pagoMonto').value = '';
+      cargarPagos();
+    } catch(e) { toast('Error al registrar pago', 'error'); }
+  }
+
+  async function eliminarPago(id) {
+    if (!confirm('¿Eliminar pago #' + id + '?')) return;
+    try {
+      await del('/api/pagos/' + id);
+      toast('Pago eliminado');
+      cargarPagos();
+    } catch(e) { toast('Error al eliminar', 'error'); }
+  }
+
+  // ─── FACTURAS ───
+  async function cargarFacturas() {
+    try {
+      const data = await get('/api/facturas');
+      const tbody = document.getElementById('tablaFacturas');
+      if (!data.length) {
+        tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">🧾</div><p>No hay facturas registradas</p></div></td></tr>';
+        return;
+      }
+      tbody.innerHTML = data.map(f => `
+        <tr>
+          <td><span style="color:var(--text-muted)">#${f.id}</span></td>
+          <td>Reserva #${f.reserva?.id || '—'}</td>
+          <td><strong>$${f.total?.toLocaleString()}</strong></td>
+          <td>${f.fechaEmision}</td>
+          <td><button class="btn btn-danger btn-sm" onclick="eliminarFactura(${f.id})">🗑️</button></td>
+        </tr>
+      `).join('');
+    } catch(e) { toast('Error al cargar facturas', 'error'); }
+  }
+
+  async function generarFactura() {
+    const reservaId = parseInt(document.getElementById('factReserva').value);
+    const total = parseFloat(document.getElementById('factTotal').value);
+    const fecha = document.getElementById('factFecha').value;
+    if (!reservaId || !total || !fecha) return toast('Completa todos los campos', 'error');
+    try {
+      await post('/api/facturas', {
+        total, fechaEmision: fecha,
+        reserva: { id: reservaId }
+      });
+      toast('Factura generada exitosamente');
+      document.getElementById('factReserva').value = '';
+      document.getElementById('factTotal').value = '';
+      cargarFacturas();
+    } catch(e) { toast('Error al generar factura', 'error'); }
+  }
+
+  async function eliminarFactura(id) {
+    if (!confirm('¿Eliminar factura #' + id + '?')) return;
+    try {
+      await del('/api/facturas/' + id);
+      toast('Factura eliminada');
+      cargarFacturas();
+    } catch(e) { toast('Error al eliminar', 'error'); }
+  }
+
+  // ─── INIT ───
+  cargarHabitaciones();
+</script>
+</body>
+</html>
