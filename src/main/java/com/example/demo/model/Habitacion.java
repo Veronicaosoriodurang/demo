@@ -18,6 +18,7 @@ public class Habitacion {
     private String numero;
     private String tipo;
     private Double precioPorNoche;
+    private String imagenUrl;
 
     @ManyToOne
     @JoinColumn(name = "piso_id")
