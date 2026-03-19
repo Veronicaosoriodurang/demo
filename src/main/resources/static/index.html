@@ -77,7 +77,7 @@
 
     .nav {
       display: grid;
-      grid-template-columns: repeat(6, minmax(0, 1fr));
+      grid-template-columns: repeat(7, minmax(0, 1fr));
       gap: 8px;
     }
 
@@ -122,6 +122,31 @@
     }
 
     .card-content { padding: 14px 16px; }
+
+    .availability-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .availability-item {
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .availability-item h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+
+    .availability-item p {
+      margin: 4px 0;
+      font-size: 14px;
+      color: var(--muted);
+    }
 
     .stats {
       display: grid;
@@ -274,7 +299,7 @@
     }
 
     @media (max-width: 980px) {
-      .nav { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .nav { grid-template-columns: repeat(4, minmax(0, 1fr)); }
       .stats { grid-template-columns: 1fr; }
     }
 
@@ -297,6 +322,7 @@
         <div class="api-badge">API: ONLINE</div>
       </div>
       <nav class="nav">
+        <button data-section="disponibilidad" onclick="showSection('disponibilidad')">Disponibilidad</button>
         <button class="active" data-section="dashboard" onclick="showSection('dashboard')">Dashboard</button>
         <button data-section="habitaciones" onclick="showSection('habitaciones')">Habitaciones</button>
         <button data-section="clientes" onclick="showSection('clientes')">Clientes</button>
@@ -306,6 +332,24 @@
       </nav>
       <div class="created-id" id="createdId"></div>
     </header>
+
+    <section id="section-disponibilidad" class="section">
+      <div class="grid">
+        <article class="card">
+          <h2>Consultar disponibilidad por fechas</h2>
+          <div class="card-content">
+            <div class="form-grid">
+              <div><label>Fecha de entrada</label><input id="dispFechaEntrada" type="date"></div>
+              <div><label>Fecha de salida</label><input id="dispFechaSalida" type="date"></div>
+            </div>
+            <div class="actions">
+              <button class="btn btn-primary" onclick="consultarDisponibilidad()">Ver disponibilidad</button>
+            </div>
+            <div id="resultadoDisponibilidad" class="availability-grid"></div>
+          </div>
+        </article>
+      </div>
+    </section>
 
     <section id="section-dashboard" class="section active">
       <div class="grid">
@@ -498,13 +542,14 @@
 
   <script>
     const API = "http://localhost:8080";
-    const sections = ["dashboard", "habitaciones", "clientes", "reservas", "checkio", "finanzas"];
+    const sections = ["disponibilidad", "dashboard", "habitaciones", "clientes", "reservas", "checkio", "finanzas"];
 
     function showSection(name) {
       document.querySelectorAll(".section").forEach((s) => s.classList.remove("active"));
       document.querySelectorAll(".nav button").forEach((b) => b.classList.remove("active"));
       document.getElementById(`section-${name}`).classList.add("active");
       document.querySelector(`.nav button[data-section="${name}"]`).classList.add("active");
+      if (name === "disponibilidad") limpiarResultadoDisponibilidad();
       if (name === "dashboard") cargarDashboard();
       if (name === "habitaciones") cargarHabitaciones();
       if (name === "clientes") cargarClientes();
@@ -572,6 +617,61 @@
       const m = String(t.getMonth() + 1).padStart(2, "0");
       const d = String(t.getDate()).padStart(2, "0");
       return a === `${y}-${m}-${d}`;
+    }
+
+    function limpiarResultadoDisponibilidad() {
+      const box = document.getElementById("resultadoDisponibilidad");
+      if (box) box.innerHTML = "";
+    }
+
+    function calcularNoches(fechaEntrada, fechaSalida) {
+      const start = new Date(fechaEntrada);
+      const end = new Date(fechaSalida);
+      const diff = end.getTime() - start.getTime();
+      const dias = Math.ceil(diff / (1000 * 60 * 60 * 24));
+      return dias > 0 ? dias : 0;
+    }
+
+    async function consultarDisponibilidad() {
+      const fechaEntrada = document.getElementById("dispFechaEntrada").value;
+      const fechaSalida = document.getElementById("dispFechaSalida").value;
+      if (!fechaEntrada || !fechaSalida) return toast("Ingresa ambas fechas", false);
+      const noches = calcularNoches(fechaEntrada, fechaSalida);
+      if (!noches) return toast("La fecha de salida debe ser posterior a la de entrada", false);
+
+      try {
+        const rooms = await get(`/api/habitaciones/disponibles?fechaEntrada=${fechaEntrada}&fechaSalida=${fechaSalida}`);
+        const box = document.getElementById("resultadoDisponibilidad");
+        if (!rooms.length) {
+          box.innerHTML = "<p>No hay habitaciones disponibles para ese rango.</p>";
+          return;
+        }
+        box.innerHTML = rooms.map((h) => {
+          const total = (h.precioPorNoche || 0) * noches;
+          return `
+            <div class="availability-item">
+              <h3>Habitacion ${h.numero}</h3>
+              <p>Tipo: <strong>${h.tipo}</strong></p>
+              <p>Precio por noche: <strong>$${(h.precioPorNoche || 0).toLocaleString()}</strong></p>
+              <p>Total (${noches} noche${noches > 1 ? "s" : ""}): <strong>$${total.toLocaleString()}</strong></p>
+              <div class="actions" style="margin-top:8px">
+                <button class="btn btn-primary" onclick="reservarHabitacionDisponible(${h.id}, '${fechaEntrada}', '${fechaSalida}')">Reservar esta habitacion</button>
+              </div>
+            </div>
+          `;
+        }).join("");
+      } catch (e) {
+        toast("No se pudo consultar disponibilidad", false);
+      }
+    }
+
+    function reservarHabitacionDisponible(habitacionId, fechaEntrada, fechaSalida) {
+      showSection("reservas");
+      document.getElementById("resHabitacion").value = habitacionId;
+      document.getElementById("resFechaEntrada").value = fechaEntrada;
+      document.getElementById("resFechaSalida").value = fechaSalida;
+      document.getElementById("resCliente").focus();
+      toast("Habitacion seleccionada para reserva");
     }
 
     async function cargarDashboard() {
