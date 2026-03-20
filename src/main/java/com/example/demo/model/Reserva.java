@@ -20,6 +20,7 @@ public class Reserva {
     private LocalDate fechaEntrada;
     private LocalDate fechaSalida;
     private String estado;
+    private Double totalEstancia;
 
     @ManyToOne
     @JoinColumn(name = "cliente_id")

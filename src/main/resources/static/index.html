@@ -3,247 +3,233 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hotel Dashboard</title>
+  <title>Grand Hotel | Flujo Inteligente</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0f172a;
-      --panel: #111827;
-      --panel-2: #1f2937;
-      --text: #e5e7eb;
-      --muted: #9ca3af;
-      --primary: #38bdf8;
-      --success: #22c55e;
-      --danger: #ef4444;
-      --warning: #f59e0b;
-      --border: #374151;
+      --bg: #0d1323;
+      --panel: #141d33;
+      --panel-2: #1d2945;
+      --line: #324266;
+      --text: #edf3ff;
+      --muted: #9eb0d6;
+      --primary: #67b0ff;
+      --ok: #28c76f;
+      --danger: #ff5b6e;
+      --warn: #ffb020;
     }
-
     * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: Inter, Arial, sans-serif;
-      background: linear-gradient(170deg, #0b1220, var(--bg));
+      background: radial-gradient(circle at top, #13203b, var(--bg) 45%);
       color: var(--text);
-      font-size: 16px;
     }
-
-    .container {
-      max-width: 1400px;
+    .app {
+      max-width: 1360px;
       margin: 0 auto;
       padding: 16px;
     }
-
     .header {
       background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 14px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
       padding: 16px;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
     }
-
     .header-top {
       display: flex;
-      align-items: center;
       justify-content: space-between;
+      align-items: center;
       gap: 10px;
       margin-bottom: 12px;
       flex-wrap: wrap;
     }
-
-    .title {
+    h1 {
       margin: 0;
       font-size: 30px;
-      font-weight: 800;
+      letter-spacing: 0.2px;
     }
-
-    .subtitle {
-      margin: 6px 0 0;
-      color: var(--muted);
-      font-size: 16px;
-    }
-
+    .subtitle { margin-top: 6px; color: var(--muted); }
     .api-badge {
-      background: rgba(56, 189, 248, 0.15);
-      color: #7dd3fc;
-      border: 1px solid rgba(56, 189, 248, 0.5);
-      padding: 8px 12px;
+      border: 1px solid rgba(40, 199, 111, 0.55);
+      color: #8df5be;
+      background: rgba(40, 199, 111, 0.12);
       border-radius: 999px;
-      font-size: 14px;
-      font-weight: 600;
+      padding: 8px 12px;
+      font-weight: 700;
     }
-
-    .nav {
+    .menu {
       display: grid;
-      grid-template-columns: repeat(7, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 220px));
       gap: 8px;
     }
-
-    .nav button {
-      border: 1px solid var(--border);
+    .menu button {
+      border: 1px solid var(--line);
       background: var(--panel-2);
       color: var(--text);
-      border-radius: 10px;
-      padding: 12px 10px;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .nav button.active {
-      border-color: var(--primary);
-      background: rgba(56, 189, 248, 0.2);
-    }
-
-    .section { display: none; }
-    .section.active { display: block; }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(12, minmax(0, 1fr));
-      gap: 12px;
-    }
-
-    .card {
-      grid-column: span 12;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      overflow: hidden;
-    }
-
-    .card h2 {
-      margin: 0;
-      font-size: 22px;
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .card-content { padding: 14px 16px; }
-
-    .availability-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .availability-item {
-      background: var(--panel-2);
-      border: 1px solid var(--border);
       border-radius: 12px;
       padding: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
     }
-
-    .availability-item h3 {
-      margin: 0 0 8px;
-      font-size: 18px;
+    .menu button.active {
+      border-color: var(--primary);
+      background: rgba(103, 176, 255, 0.2);
     }
+    .view { display: none; }
+    .view.active { display: block; }
 
-    .availability-item p {
-      margin: 4px 0;
-      font-size: 14px;
-      color: var(--muted);
-    }
-
-    .stats {
+    .steps {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .stat {
-      padding: 16px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: var(--panel-2);
-    }
-
-    .stat-label { color: var(--muted); font-weight: 600; font-size: 15px; }
-    .stat-value { margin-top: 6px; font-size: 38px; font-weight: 800; }
-    .stat.success { border-color: rgba(34, 197, 94, 0.6); }
-    .stat.success .stat-value { color: var(--success); }
-    .stat.danger { border-color: rgba(239, 68, 68, 0.6); }
-    .stat.danger .stat-value { color: var(--danger); }
-    .stat.warning { border-color: rgba(245, 158, 11, 0.6); }
-    .stat.warning .stat-value { color: var(--warning); }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 10px;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
       margin-bottom: 10px;
     }
+    .step {
+      border: 1px solid var(--line);
+      background: var(--panel-2);
+      border-radius: 10px;
+      color: var(--muted);
+      text-align: center;
+      padding: 10px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .step.active {
+      border-color: var(--primary);
+      color: #cbe3ff;
+      background: rgba(103, 176, 255, 0.2);
+    }
+    .wizard-step { display: none; }
+    .wizard-step.active { display: block; }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    .card h2 {
+      margin: 0;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      font-size: 22px;
+    }
+    .card-body { padding: 14px 16px; }
+    .grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 10px; }
+    .span-12 { grid-column: span 12; }
+    .span-7 { grid-column: span 7; }
+    .span-5 { grid-column: span 5; }
+    .span-6 { grid-column: span 6; }
 
     label {
       display: block;
       margin-bottom: 4px;
       color: var(--muted);
-      font-size: 14px;
       font-weight: 600;
+      font-size: 14px;
     }
-
     input, select {
       width: 100%;
-      border: 1px solid var(--border);
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
       background: var(--panel-2);
       color: var(--text);
-      border-radius: 10px;
-      font-size: 16px;
       padding: 10px 12px;
-      min-height: 42px;
+      font-size: 15px;
     }
-
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+    }
     .actions {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       flex-wrap: wrap;
+      margin-top: 10px;
     }
-
     .btn {
       border: none;
       border-radius: 10px;
-      font-size: 15px;
-      font-weight: 700;
-      padding: 11px 14px;
-      cursor: pointer;
       min-height: 42px;
+      padding: 10px 14px;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
     }
-
-    .btn-primary { background: var(--primary); color: #082f49; }
-    .btn-secondary { background: #334155; color: #f1f5f9; }
+    .btn-primary { background: var(--primary); color: #082138; }
+    .btn-ok { background: var(--ok); color: #082414; }
     .btn-danger { background: var(--danger); color: #fff; }
-    .btn-success { background: var(--success); color: #062d13; }
+    .btn-muted { background: #43557a; color: #e8eeff; }
+    .btn-warn { background: var(--warn); color: #372504; }
 
-    .btn-check {
-      width: 100%;
-      font-size: 24px;
-      padding: 18px 12px;
-      border-radius: 14px;
-      font-weight: 800;
+    .rooms {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(245px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .room {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--panel-2);
+      overflow: hidden;
+    }
+    .room img { width: 100%; height: 150px; object-fit: cover; }
+    .room-content { padding: 10px; }
+    .room h3 { margin: 0 0 6px; font-size: 18px; }
+    .room p { margin: 4px 0; color: var(--muted); }
+    .room .price { color: #9dd2ff; font-weight: 800; }
+    .room .total { color: #98f7c3; font-weight: 800; }
+
+    .summary {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--panel-2);
+      padding: 12px;
+      line-height: 1.65;
+    }
+    .summary strong { color: #cce3ff; }
+
+    .invoice-panel { margin-top: 8px; }
+    .invoice {
+      border: 1px dashed #79b9ff;
+      border-radius: 12px;
+      background: rgba(103, 176, 255, 0.15);
+      padding: 12px;
+      line-height: 1.65;
+    }
+    .print-area {
+      display: none;
+      color: #111;
+      font-family: Arial, sans-serif;
     }
 
     .table-wrap { overflow-x: auto; }
     table {
       width: 100%;
+      min-width: 760px;
       border-collapse: collapse;
-      min-width: 740px;
     }
     th, td {
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid var(--line);
       text-align: left;
-      padding: 12px 10px;
-      font-size: 15px;
+      padding: 10px;
+      font-size: 14px;
     }
     th {
       color: var(--muted);
-      font-size: 13px;
       text-transform: uppercase;
-      letter-spacing: 0.04em;
+      font-size: 12px;
+      letter-spacing: 0.3px;
     }
-
     .badge {
       border-radius: 999px;
       padding: 4px 10px;
@@ -251,18 +237,18 @@
       font-size: 12px;
       border: 1px solid transparent;
     }
-    .b-disponible { color: var(--success); background: rgba(34,197,94,0.15); border-color: rgba(34,197,94,0.4); }
-    .b-ocupada { color: var(--danger); background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.4); }
-    .b-mant { color: var(--warning); background: rgba(245,158,11,0.15); border-color: rgba(245,158,11,0.4); }
-    .b-confirmada { color: #67e8f9; background: rgba(6,182,212,0.15); border-color: rgba(6,182,212,0.45); }
-    .b-activa { color: var(--success); background: rgba(34,197,94,0.15); border-color: rgba(34,197,94,0.4); }
-    .b-cancelada { color: var(--danger); background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.4); }
-    .b-finalizada { color: #c4b5fd; background: rgba(139,92,246,0.15); border-color: rgba(139,92,246,0.4); }
+    .b-conf { color: #79ecff; border-color: rgba(121, 236, 255, 0.5); background: rgba(121, 236, 255, 0.15); }
+    .b-act { color: #9cf7c3; border-color: rgba(156, 247, 195, 0.5); background: rgba(156, 247, 195, 0.15); }
+    .b-can { color: #ffb0b9; border-color: rgba(255, 176, 185, 0.5); background: rgba(255, 176, 185, 0.15); }
+    .b-fin { color: #d2c6ff; border-color: rgba(210, 198, 255, 0.5); background: rgba(210, 198, 255, 0.15); }
+    .b-disp { color: #a8f8cb; border-color: rgba(168, 248, 203, 0.45); background: rgba(168, 248, 203, 0.14); }
+    .b-ocup { color: #ffb0b9; border-color: rgba(255, 176, 185, 0.5); background: rgba(255, 176, 185, 0.15); }
+    .b-mant { color: #ffd88c; border-color: rgba(255, 216, 140, 0.5); background: rgba(255, 216, 140, 0.15); }
 
     .toast-wrap {
       position: fixed;
-      top: 14px;
       right: 14px;
+      top: 14px;
       display: flex;
       flex-direction: column;
       gap: 8px;
@@ -271,269 +257,175 @@
     .toast {
       border-radius: 10px;
       padding: 10px 12px;
-      font-size: 14px;
-      font-weight: 600;
       color: #fff;
-    }
-    .toast.ok { background: #16a34a; }
-    .toast.err { background: #dc2626; }
-
-    .created-id {
-      margin-top: 12px;
-      background: rgba(56, 189, 248, 0.18);
-      border: 1px solid rgba(56, 189, 248, 0.6);
-      color: #7dd3fc;
-      border-radius: 10px;
-      padding: 10px 12px;
-      display: none;
       font-weight: 700;
-      font-size: 15px;
     }
-
-    @media (min-width: 1000px) {
-      .span-4 { grid-column: span 4; }
-      .span-5 { grid-column: span 5; }
-      .span-6 { grid-column: span 6; }
-      .span-7 { grid-column: span 7; }
-      .span-8 { grid-column: span 8; }
-    }
+    .ok { background: #1faa59; }
+    .err { background: #db3a4e; }
 
     @media (max-width: 980px) {
-      .nav { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-      .stats { grid-template-columns: 1fr; }
+      .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .span-7, .span-6, .span-5 { grid-column: span 12; }
+      .menu { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
 
-    @media (max-width: 640px) {
-      .title { font-size: 24px; }
-      .nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      table { min-width: 640px; }
+    @media print {
+      body { background: #fff; color: #111; }
+      .header, #view-admin, #view-wizard .steps, #step1, #step2, #step3, .toast-wrap { display: none !important; }
+      #step4 { display: block !important; }
+      #facturaScreen { display: none !important; }
+      #facturaPrint { display: block !important; }
+      .card, .invoice { border: none !important; background: #fff !important; color: #111 !important; }
+      .print-area h2 { margin-top: 0; }
     }
   </style>
 </head>
 <body>
   <div class="toast-wrap" id="toastWrap"></div>
-  <div class="container">
+  <div class="app">
     <header class="header">
       <div class="header-top">
         <div>
-          <h1 class="title">Dashboard Hotelero</h1>
-          <p class="subtitle">Panel practico y de lectura rapida conectado a http://localhost:8080</p>
+          <h1>Grand Hotel - Recepcion Inteligente</h1>
+          <div class="subtitle">Flujo automatico de 4 pasos + panel de administracion</div>
         </div>
-        <div class="api-badge">API: ONLINE</div>
+        <div class="api-badge">API: http://localhost:8080</div>
       </div>
-      <nav class="nav">
-        <button data-section="disponibilidad" onclick="showSection('disponibilidad')">Disponibilidad</button>
-        <button class="active" data-section="dashboard" onclick="showSection('dashboard')">Dashboard</button>
-        <button data-section="habitaciones" onclick="showSection('habitaciones')">Habitaciones</button>
-        <button data-section="clientes" onclick="showSection('clientes')">Clientes</button>
-        <button data-section="reservas" onclick="showSection('reservas')">Reservas</button>
-        <button data-section="checkio" onclick="showSection('checkio')">Check In/Out</button>
-        <button data-section="finanzas" onclick="showSection('finanzas')">Pagos/Facturas</button>
-      </nav>
-      <div class="created-id" id="createdId"></div>
+      <div class="menu">
+        <button id="btnWizard" class="active" onclick="setView('wizard')">Flujo de Reserva</button>
+        <button id="btnAdmin" onclick="setView('admin')">Panel de Administracion</button>
+      </div>
     </header>
 
-    <section id="section-disponibilidad" class="section">
-      <div class="grid">
+    <section id="view-wizard" class="view active">
+      <div class="steps">
+        <div id="chip1" class="step active">Paso 1 - Disponibilidad</div>
+        <div id="chip2" class="step">Paso 2 - Cliente</div>
+        <div id="chip3" class="step">Paso 3 - Pago</div>
+        <div id="chip4" class="step">Paso 4 - Factura</div>
+      </div>
+
+      <section id="step1" class="wizard-step active">
         <article class="card">
-          <h2>Consultar disponibilidad por fechas</h2>
-          <div class="card-content">
+          <h2>PASO 1 - Buscar disponibilidad</h2>
+          <div class="card-body">
             <div class="form-grid">
-              <div><label>Fecha de entrada</label><input id="dispFechaEntrada" type="date"></div>
-              <div><label>Fecha de salida</label><input id="dispFechaSalida" type="date"></div>
+              <div><label>Fecha entrada</label><input id="fechaEntrada" type="date"></div>
+              <div><label>Fecha salida</label><input id="fechaSalida" type="date"></div>
             </div>
             <div class="actions">
-              <button class="btn btn-primary" onclick="consultarDisponibilidad()">Ver disponibilidad</button>
+              <button class="btn btn-primary" onclick="buscarHabitacionesDisponibles()">Buscar habitaciones disponibles</button>
             </div>
-            <div id="resultadoDisponibilidad" class="availability-grid"></div>
+            <div id="rooms" class="rooms"></div>
           </div>
         </article>
-      </div>
-    </section>
+      </section>
 
-    <section id="section-dashboard" class="section active">
-      <div class="grid">
+      <section id="step2" class="wizard-step">
+        <div class="grid">
+          <article class="card span-7">
+            <h2>PASO 2 - Datos del cliente</h2>
+            <div class="card-body">
+              <div class="form-grid">
+                <div><label>Nombre</label><input id="cliNombre" placeholder="Nombre"></div>
+                <div><label>Apellido</label><input id="cliApellido" placeholder="Apellido"></div>
+                <div><label>Email</label><input id="cliEmail" type="email" placeholder="correo@dominio.com"></div>
+              </div>
+              <div class="actions">
+                <button class="btn btn-primary" onclick="confirmarReserva()">Confirmar Reserva</button>
+                <button class="btn btn-muted" onclick="goStep(1)">Volver</button>
+              </div>
+            </div>
+          </article>
+          <article class="card span-5">
+            <h2>Resumen seleccionado</h2>
+            <div class="card-body">
+              <div id="resumenSeleccion" class="summary">Selecciona una habitacion en el Paso 1.</div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="step3" class="wizard-step">
         <article class="card">
-          <h2>Estado general de habitaciones</h2>
-          <div class="card-content">
-            <div class="stats">
-              <div class="stat success">
-                <div class="stat-label">Disponibles</div>
-                <div class="stat-value" id="dDisp">0</div>
-              </div>
-              <div class="stat danger">
-                <div class="stat-label">Ocupadas</div>
-                <div class="stat-value" id="dOcup">0</div>
-              </div>
-              <div class="stat warning">
-                <div class="stat-label">Mantenimiento</div>
-                <div class="stat-value" id="dMant">0</div>
-              </div>
-            </div>
-          </div>
-        </article>
-        <article class="card span-7">
-          <h2>Reservas de hoy</h2>
-          <div class="card-content table-wrap">
-            <table>
-              <thead><tr><th>ID</th><th>Cliente</th><th>Habitacion</th><th>Estado</th></tr></thead>
-              <tbody id="tablaHoy"><tr><td colspan="4">Cargando...</td></tr></tbody>
-            </table>
-          </div>
-        </article>
-        <article class="card span-5">
-          <h2>Clientes activos</h2>
-          <div class="card-content">
-            <div class="stat success" style="margin-bottom:10px">
-              <div class="stat-label">Total activos</div>
-              <div class="stat-value" id="dActivos">0</div>
-            </div>
-            <div class="table-wrap">
-              <table>
-                <thead><tr><th>ID</th><th>Nombre</th></tr></thead>
-                <tbody id="tablaActivos"><tr><td colspan="2">Cargando...</td></tr></tbody>
-              </table>
-            </div>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <section id="section-habitaciones" class="section">
-      <div class="grid">
-        <article class="card span-4">
-          <h2>Crear habitacion</h2>
-          <div class="card-content">
-            <div class="form-grid">
-              <div><label>Numero</label><input id="habNumero" placeholder="101"></div>
-              <div><label>Tipo</label><select id="habTipo"><option>Simple</option><option>Doble</option><option>Suite</option><option>Presidencial</option></select></div>
-              <div><label>Precio por noche</label><input id="habPrecio" type="number" placeholder="150000"></div>
-              <div><label>Estado</label><select id="habEstado"><option value="DISPONIBLE">DISPONIBLE</option><option value="OCUPADA">OCUPADA</option><option value="MANTENIMIENTO">MANTENIMIENTO</option></select></div>
-            </div>
-            <div class="actions">
-              <button class="btn btn-primary" onclick="crearHabitacion()">Crear habitacion</button>
-              <button class="btn btn-secondary" onclick="cargarHabitaciones()">Actualizar</button>
-            </div>
-          </div>
-        </article>
-        <article class="card span-8">
-          <h2>Tabla de habitaciones</h2>
-          <div class="card-content table-wrap">
-            <table>
-              <thead><tr><th>ID</th><th>Numero</th><th>Tipo</th><th>Precio</th><th>Estado</th><th>Acciones</th></tr></thead>
-              <tbody id="tablaHabitaciones"><tr><td colspan="6">Cargando...</td></tr></tbody>
-            </table>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <section id="section-clientes" class="section">
-      <div class="grid">
-        <article class="card span-4">
-          <h2>Crear cliente</h2>
-          <div class="card-content">
-            <div class="form-grid">
-              <div><label>Nombre</label><input id="cliNombre" placeholder="Ana"></div>
-              <div><label>Apellido</label><input id="cliApellido" placeholder="Perez"></div>
-              <div><label>Email</label><input id="cliEmail" type="email" placeholder="ana@email.com"></div>
-            </div>
-            <div class="actions">
-              <button class="btn btn-primary" onclick="crearCliente()">Crear cliente</button>
-              <button class="btn btn-secondary" onclick="cargarClientes()">Actualizar</button>
-            </div>
-          </div>
-        </article>
-        <article class="card span-8">
-          <h2>Tabla de clientes</h2>
-          <div class="card-content table-wrap">
-            <table>
-              <thead><tr><th>ID</th><th>Nombre</th><th>Apellido</th><th>Email</th><th>Acciones</th></tr></thead>
-              <tbody id="tablaClientes"><tr><td colspan="5">Cargando...</td></tr></tbody>
-            </table>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <section id="section-reservas" class="section">
-      <div class="grid">
-        <article class="card span-4">
-          <h2>Crear reserva</h2>
-          <div class="card-content">
-            <div class="form-grid">
-              <div><label>ID Cliente</label><input id="resCliente" type="number" placeholder="1"></div>
-              <div><label>ID Habitacion</label><input id="resHabitacion" type="number" placeholder="1"></div>
-              <div><label>Fecha entrada</label><input id="resFechaEntrada" type="date"></div>
-              <div><label>Fecha salida</label><input id="resFechaSalida" type="date"></div>
-            </div>
-            <div class="actions">
-              <button class="btn btn-primary" onclick="crearReserva()">Crear reserva</button>
-              <button class="btn btn-secondary" onclick="cargarReservas()">Actualizar</button>
-            </div>
-          </div>
-        </article>
-        <article class="card span-8">
-          <h2>Tabla de reservas</h2>
-          <div class="card-content table-wrap">
-            <table>
-              <thead><tr><th>ID</th><th>Cliente</th><th>Habitacion</th><th>Entrada</th><th>Salida</th><th>Estado</th><th>Acciones</th></tr></thead>
-              <tbody id="tablaReservas"><tr><td colspan="7">Cargando...</td></tr></tbody>
-            </table>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <section id="section-checkio" class="section">
-      <div class="grid">
-        <article class="card span-6">
-          <h2>Check In</h2>
-          <div class="card-content">
-            <label>ID reserva</label>
-            <input id="checkInId" type="number" placeholder="ID de reserva">
+          <h2>PASO 3 - Pago</h2>
+          <div class="card-body">
+            <div id="resumenPago" class="summary"></div>
             <div style="height:10px"></div>
-            <button class="btn btn-success btn-check" onclick="realizarCheckIn()">CHECK IN</button>
+            <div class="form-grid">
+              <div>
+                <label>Metodo de pago</label>
+                <select id="metodoPago">
+                  <option value="EFECTIVO">Efectivo</option>
+                  <option value="TARJETA_CREDITO">Tarjeta Credito</option>
+                  <option value="TARJETA_DEBITO">Tarjeta Debito</option>
+                  <option value="TRANSFERENCIA">Transferencia</option>
+                </select>
+              </div>
+            </div>
+            <div class="actions">
+              <button class="btn btn-ok" onclick="pagarAhora()">Pagar ahora</button>
+              <button class="btn btn-muted" onclick="goStep(2)">Volver</button>
+            </div>
           </div>
         </article>
-        <article class="card span-6">
-          <h2>Check Out</h2>
-          <div class="card-content">
-            <label>ID reserva</label>
-            <input id="checkOutId" type="number" placeholder="ID de reserva">
-            <div style="height:10px"></div>
-            <button class="btn btn-danger btn-check" onclick="realizarCheckOut()">CHECK OUT</button>
+      </section>
+
+      <section id="step4" class="wizard-step">
+        <article class="card">
+          <h2>PASO 4 - Factura automatica</h2>
+          <div class="card-body invoice-panel">
+            <div id="facturaScreen" class="invoice">La factura aparecera aqui despues del pago.</div>
+            <div id="facturaPrint" class="print-area"></div>
+            <div class="actions">
+              <button class="btn btn-warn" onclick="imprimirFactura()">🖨️ Imprimir Factura</button>
+              <button class="btn btn-primary" onclick="enviarFacturaEmail()">📧 Enviar por Email</button>
+              <button class="btn btn-muted" onclick="nuevaReserva()">Nueva Reserva</button>
+            </div>
           </div>
         </article>
-      </div>
+      </section>
     </section>
 
-    <section id="section-finanzas" class="section">
+    <section id="view-admin" class="view">
       <div class="grid">
-        <article class="card span-6">
-          <h2>Registrar pago</h2>
-          <div class="card-content">
-            <div class="form-grid">
-              <div><label>ID Reserva</label><input id="pagoReserva" type="number"></div>
-              <div><label>Monto</label><input id="pagoMonto" type="number"></div>
-              <div><label>Metodo</label><select id="pagoMetodo"><option value="EFECTIVO">EFECTIVO</option><option value="TARJETA_CREDITO">TARJETA_CREDITO</option><option value="TARJETA_DEBITO">TARJETA_DEBITO</option><option value="TRANSFERENCIA">TRANSFERENCIA</option></select></div>
-            </div>
-            <div class="actions">
-              <button class="btn btn-primary" onclick="registrarPago()">Registrar pago</button>
-            </div>
+        <article class="card span-12">
+          <h2>Reservas activas (con Check In / Check Out)</h2>
+          <div class="card-body table-wrap">
+            <table>
+              <thead><tr><th>ID</th><th>Cliente</th><th>Habitacion</th><th>Fechas</th><th>Estado</th><th>Acciones</th></tr></thead>
+              <tbody id="tbReservasActivas"><tr><td colspan="6">Cargando...</td></tr></tbody>
+            </table>
           </div>
         </article>
+
         <article class="card span-6">
-          <h2>Generar factura</h2>
-          <div class="card-content">
-            <div class="form-grid">
-              <div><label>ID Reserva</label><input id="factReserva" type="number"></div>
-              <div><label>Total</label><input id="factTotal" type="number"></div>
-              <div><label>Fecha emision</label><input id="factFecha" type="date"></div>
-            </div>
-            <div class="actions">
-              <button class="btn btn-primary" onclick="generarFactura()">Generar factura</button>
-            </div>
+          <h2>Historial de facturas</h2>
+          <div class="card-body table-wrap">
+            <table>
+              <thead><tr><th>Factura</th><th>Reserva</th><th>Total</th><th>Fecha emision</th></tr></thead>
+              <tbody id="tbFacturas"><tr><td colspan="4">Cargando...</td></tr></tbody>
+            </table>
+          </div>
+        </article>
+
+        <article class="card span-6">
+          <h2>Clientes registrados</h2>
+          <div class="card-body table-wrap">
+            <table>
+              <thead><tr><th>ID</th><th>Nombre</th><th>Email</th></tr></thead>
+              <tbody id="tbClientes"><tr><td colspan="3">Cargando...</td></tr></tbody>
+            </table>
+          </div>
+        </article>
+
+        <article class="card span-12">
+          <h2>Habitaciones y estado actual</h2>
+          <div class="card-body table-wrap">
+            <table>
+              <thead><tr><th>ID</th><th>Numero</th><th>Tipo</th><th>Precio</th><th>Estado</th></tr></thead>
+              <tbody id="tbHabitaciones"><tr><td colspan="5">Cargando...</td></tr></tbody>
+            </table>
           </div>
         </article>
       </div>
@@ -542,38 +434,29 @@
 
   <script>
     const API = "http://localhost:8080";
-    const sections = ["disponibilidad", "dashboard", "habitaciones", "clientes", "reservas", "checkio", "finanzas"];
-
-    function showSection(name) {
-      document.querySelectorAll(".section").forEach((s) => s.classList.remove("active"));
-      document.querySelectorAll(".nav button").forEach((b) => b.classList.remove("active"));
-      document.getElementById(`section-${name}`).classList.add("active");
-      document.querySelector(`.nav button[data-section="${name}"]`).classList.add("active");
-      if (name === "disponibilidad") limpiarResultadoDisponibilidad();
-      if (name === "dashboard") cargarDashboard();
-      if (name === "habitaciones") cargarHabitaciones();
-      if (name === "clientes") cargarClientes();
-      if (name === "reservas") cargarReservas();
-    }
+    const state = {
+      fechaEntrada: "",
+      fechaSalida: "",
+      noches: 0,
+      habitacion: null,
+      total: 0,
+      cliente: null,
+      reserva: null,
+      pago: null,
+      factura: null
+    };
 
     function toast(msg, ok = true) {
-      const el = document.createElement("div");
-      el.className = `toast ${ok ? "ok" : "err"}`;
-      el.textContent = msg;
-      document.getElementById("toastWrap").appendChild(el);
-      setTimeout(() => el.remove(), 3200);
-    }
-
-    function showCreatedId(entity, id) {
-      if (!id) return;
-      const el = document.getElementById("createdId");
-      el.style.display = "block";
-      el.textContent = `${entity} creado con ID: #${id}`;
+      const t = document.createElement("div");
+      t.className = `toast ${ok ? "ok" : "err"}`;
+      t.textContent = msg;
+      document.getElementById("toastWrap").appendChild(t);
+      setTimeout(() => t.remove(), 3400);
     }
 
     async function get(url) {
       const r = await fetch(API + url);
-      if (!r.ok) throw new Error("Error al consultar");
+      if (!r.ok) throw new Error(await r.text());
       return r.json();
     }
 
@@ -587,379 +470,342 @@
       return r.json();
     }
 
-    async function del(url) {
-      const r = await fetch(API + url, { method: "DELETE" });
-      if (!r.ok) throw new Error("Error al eliminar");
+    async function put(url, data = {}) {
+      const r = await fetch(API + url, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+      if (!r.ok) throw new Error(await r.text());
+      return r;
     }
 
-    function badgeHabitacion(estado) {
-      if (estado === "DISPONIBLE") return '<span class="badge b-disponible">DISPONIBLE</span>';
-      if (estado === "OCUPADA") return '<span class="badge b-ocupada">OCUPADA</span>';
-      if (estado === "MANTENIMIENTO") return '<span class="badge b-mant">MANTENIMIENTO</span>';
-      return `<span class="badge">${estado || "-"}</span>`;
+    function setView(view) {
+      document.getElementById("view-wizard").classList.remove("active");
+      document.getElementById("view-admin").classList.remove("active");
+      document.getElementById("btnWizard").classList.remove("active");
+      document.getElementById("btnAdmin").classList.remove("active");
+      document.getElementById(`view-${view}`).classList.add("active");
+      document.getElementById(view === "wizard" ? "btnWizard" : "btnAdmin").classList.add("active");
+      if (view === "admin") loadAdmin();
     }
 
-    function badgeReserva(estado) {
-      const map = {
-        CONFIRMADA: "b-confirmada",
-        ACTIVA: "b-activa",
-        CANCELADA: "b-cancelada",
-        FINALIZADA: "b-finalizada"
-      };
-      return `<span class="badge ${map[estado] || ""}">${estado || "-"}</span>`;
+    function goStep(step) {
+      [1, 2, 3, 4].forEach((n) => {
+        document.getElementById(`step${n}`).classList.remove("active");
+        document.getElementById(`chip${n}`).classList.remove("active");
+      });
+      document.getElementById(`step${step}`).classList.add("active");
+      document.getElementById(`chip${step}`).classList.add("active");
     }
 
-    function isToday(value) {
-      if (!value) return false;
-      const a = String(value).substring(0, 10);
-      const t = new Date();
-      const y = t.getFullYear();
-      const m = String(t.getMonth() + 1).padStart(2, "0");
-      const d = String(t.getDate()).padStart(2, "0");
-      return a === `${y}-${m}-${d}`;
+    function daysBetween(start, end) {
+      const d1 = new Date(start);
+      const d2 = new Date(end);
+      const ms = d2.getTime() - d1.getTime();
+      const days = Math.ceil(ms / (1000 * 60 * 60 * 24));
+      return days > 0 ? days : 0;
     }
 
-    function limpiarResultadoDisponibilidad() {
-      const box = document.getElementById("resultadoDisponibilidad");
-      if (box) box.innerHTML = "";
+    function roomFallbackImage() {
+      return "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800";
     }
 
-    function calcularNoches(fechaEntrada, fechaSalida) {
-      const start = new Date(fechaEntrada);
-      const end = new Date(fechaSalida);
-      const diff = end.getTime() - start.getTime();
-      const dias = Math.ceil(diff / (1000 * 60 * 60 * 24));
-      return dias > 0 ? dias : 0;
+    function renderResumenSeleccion() {
+      const el = document.getElementById("resumenSeleccion");
+      if (!state.habitacion) {
+        el.textContent = "Selecciona una habitacion en el Paso 1.";
+        return;
+      }
+      el.innerHTML = `
+        <div><strong>Habitacion:</strong> ${state.habitacion.numero} (${state.habitacion.tipo})</div>
+        <div><strong>Fechas:</strong> ${state.fechaEntrada} a ${state.fechaSalida}</div>
+        <div><strong>Noches:</strong> ${state.noches}</div>
+        <div><strong>Total:</strong> $${state.total.toLocaleString()}</div>
+      `;
     }
 
-    async function consultarDisponibilidad() {
-      const fechaEntrada = document.getElementById("dispFechaEntrada").value;
-      const fechaSalida = document.getElementById("dispFechaSalida").value;
-      if (!fechaEntrada || !fechaSalida) return toast("Ingresa ambas fechas", false);
-      const noches = calcularNoches(fechaEntrada, fechaSalida);
-      if (!noches) return toast("La fecha de salida debe ser posterior a la de entrada", false);
+    async function buscarHabitacionesDisponibles() {
+      const entrada = document.getElementById("fechaEntrada").value;
+      const salida = document.getElementById("fechaSalida").value;
+      if (!entrada || !salida) return toast("Ingresa fecha de entrada y salida", false);
+      const noches = daysBetween(entrada, salida);
+      if (!noches) return toast("La salida debe ser posterior a la entrada", false);
 
       try {
-        const rooms = await get(`/api/habitaciones/disponibles?fechaEntrada=${fechaEntrada}&fechaSalida=${fechaSalida}`);
-        const box = document.getElementById("resultadoDisponibilidad");
+        const rooms = await get(`/api/habitaciones/disponibles?fechaEntrada=${entrada}&fechaSalida=${salida}`);
+        state.fechaEntrada = entrada;
+        state.fechaSalida = salida;
+        state.noches = noches;
+
+        const container = document.getElementById("rooms");
         if (!rooms.length) {
-          box.innerHTML = "<p>No hay habitaciones disponibles para ese rango.</p>";
+          container.innerHTML = "<p>No hay habitaciones disponibles para ese rango.</p>";
           return;
         }
-        box.innerHTML = rooms.map((h) => {
-          const total = (h.precioPorNoche || 0) * noches;
+        container.innerHTML = rooms.map((h) => {
+          const precio = h.precioPorNoche || 0;
+          const total = precio * noches;
+          const imagen = h.imagenUrl || roomFallbackImage();
           return `
-            <div class="availability-item">
-              <h3>Habitacion ${h.numero}</h3>
-              <p>Tipo: <strong>${h.tipo}</strong></p>
-              <p>Precio por noche: <strong>$${(h.precioPorNoche || 0).toLocaleString()}</strong></p>
-              <p>Total (${noches} noche${noches > 1 ? "s" : ""}): <strong>$${total.toLocaleString()}</strong></p>
-              <div class="actions" style="margin-top:8px">
-                <button class="btn btn-primary" onclick="reservarHabitacionDisponible(${h.id}, '${fechaEntrada}', '${fechaSalida}')">Reservar esta habitacion</button>
+            <div class="room">
+              <img src="${imagen}" alt="Habitacion ${h.numero}">
+              <div class="room-content">
+                <h3>Habitacion ${h.numero}</h3>
+                <p>Tipo: <strong>${h.tipo}</strong></p>
+                <p class="price">Precio/noche: $${precio.toLocaleString()}</p>
+                <p class="total">Total (${noches} noche${noches > 1 ? "s" : ""}): $${total.toLocaleString()}</p>
+                <div class="actions">
+                  <button class="btn btn-primary" onclick="reservarHabitacion(${h.id}, '${String(h.numero).replace(/'/g, "\\'")}', '${String(h.tipo).replace(/'/g, "\\'")}', ${precio}, '${imagen.replace(/'/g, "\\'")}')">Reservar</button>
+                </div>
               </div>
             </div>
           `;
         }).join("");
       } catch (e) {
-        toast("No se pudo consultar disponibilidad", false);
+        toast("Error consultando disponibilidad", false);
       }
     }
 
-    function reservarHabitacionDisponible(habitacionId, fechaEntrada, fechaSalida) {
-      showSection("reservas");
-      document.getElementById("resHabitacion").value = habitacionId;
-      document.getElementById("resFechaEntrada").value = fechaEntrada;
-      document.getElementById("resFechaSalida").value = fechaSalida;
-      document.getElementById("resCliente").focus();
-      toast("Habitacion seleccionada para reserva");
+    function reservarHabitacion(id, numero, tipo, precioPorNoche, imagenUrl) {
+      state.habitacion = { id, numero, tipo, precioPorNoche, imagenUrl };
+      state.total = state.noches * precioPorNoche;
+      renderResumenSeleccion();
+      goStep(2);
     }
 
-    async function cargarDashboard() {
-      try {
-        const [habitaciones, reservas, clientes] = await Promise.all([
-          get("/api/habitaciones"),
-          get("/api/reservas"),
-          get("/api/clientes")
-        ]);
-
-        const disponibles = habitaciones.filter((h) => h.estado === "DISPONIBLE").length;
-        const ocupadas = habitaciones.filter((h) => h.estado === "OCUPADA").length;
-        const mantenimiento = habitaciones.filter((h) => h.estado === "MANTENIMIENTO").length;
-        document.getElementById("dDisp").textContent = disponibles;
-        document.getElementById("dOcup").textContent = ocupadas;
-        document.getElementById("dMant").textContent = mantenimiento;
-
-        const hoy = reservas.filter((r) => isToday(r.fechaEntrada) || isToday(r.fechaSalida));
-        const tablaHoy = document.getElementById("tablaHoy");
-        if (!hoy.length) {
-          tablaHoy.innerHTML = '<tr><td colspan="4">No hay reservas para hoy</td></tr>';
-        } else {
-          tablaHoy.innerHTML = hoy.map((r) => `
-            <tr>
-              <td>#${r.id}</td>
-              <td>${r.cliente?.nombre || ("ID " + (r.cliente?.id || "-"))}</td>
-              <td>${r.habitacion?.numero || r.habitacion?.id || "-"}</td>
-              <td>${badgeReserva(r.estado)}</td>
-            </tr>
-          `).join("");
-        }
-
-        const activosIds = [...new Set(
-          reservas
-            .filter((r) => ["CONFIRMADA", "ACTIVA"].includes(r.estado))
-            .map((r) => r.cliente?.id)
-            .filter(Boolean)
-        )];
-        const activos = clientes.filter((c) => activosIds.includes(c.id));
-        document.getElementById("dActivos").textContent = activos.length;
-        const tablaActivos = document.getElementById("tablaActivos");
-        if (!activos.length) {
-          tablaActivos.innerHTML = '<tr><td colspan="2">No hay clientes activos</td></tr>';
-        } else {
-          tablaActivos.innerHTML = activos.map((c) => `<tr><td>#${c.id}</td><td>${c.nombre} ${c.apellido || ""}</td></tr>`).join("");
-        }
-      } catch (e) {
-        toast("Error cargando dashboard", false);
-      }
-    }
-
-    async function cargarHabitaciones() {
-      try {
-        const data = await get("/api/habitaciones");
-        const tbody = document.getElementById("tablaHabitaciones");
-        if (!data.length) {
-          tbody.innerHTML = '<tr><td colspan="6">No hay habitaciones registradas</td></tr>';
-          return;
-        }
-        tbody.innerHTML = data.map((h) => `
-          <tr>
-            <td>#${h.id}</td>
-            <td>${h.numero}</td>
-            <td>${h.tipo}</td>
-            <td>$${h.precioPorNoche?.toLocaleString() || 0}</td>
-            <td>${badgeHabitacion(h.estado)}</td>
-            <td><button class="btn btn-danger" onclick="eliminarHabitacion(${h.id})">Eliminar</button></td>
-          </tr>
-        `).join("");
-      } catch (e) {
-        toast("Error al cargar habitaciones", false);
-      }
-    }
-
-    async function crearHabitacion() {
-      const numero = document.getElementById("habNumero").value.trim();
-      const tipo = document.getElementById("habTipo").value;
-      const precio = parseFloat(document.getElementById("habPrecio").value);
-      const estado = document.getElementById("habEstado").value;
-      if (!numero || !precio) return toast("Completa datos de habitacion", false);
-      try {
-        const nueva = await post("/api/habitaciones", { numero, tipo, precioPorNoche: precio, estado });
-        showCreatedId("Habitacion", nueva.id);
-        toast("Habitacion creada");
-        document.getElementById("habNumero").value = "";
-        document.getElementById("habPrecio").value = "";
-        await Promise.all([cargarHabitaciones(), cargarDashboard()]);
-      } catch (e) {
-        toast("No se pudo crear habitacion", false);
-      }
-    }
-
-    async function eliminarHabitacion(id) {
-      if (!confirm(`Eliminar habitacion #${id}?`)) return;
-      try {
-        await del(`/api/habitaciones/${id}`);
-        toast("Habitacion eliminada");
-        await Promise.all([cargarHabitaciones(), cargarDashboard()]);
-      } catch (e) {
-        toast("Error al eliminar habitacion", false);
-      }
-    }
-
-    async function cargarClientes() {
-      try {
-        const data = await get("/api/clientes");
-        const tbody = document.getElementById("tablaClientes");
-        if (!data.length) {
-          tbody.innerHTML = '<tr><td colspan="5">No hay clientes registrados</td></tr>';
-          return;
-        }
-        tbody.innerHTML = data.map((c) => `
-          <tr>
-            <td>#${c.id}</td>
-            <td>${c.nombre || "-"}</td>
-            <td>${c.apellido || "-"}</td>
-            <td>${c.email || "-"}</td>
-            <td><button class="btn btn-danger" onclick="eliminarCliente(${c.id})">Eliminar</button></td>
-          </tr>
-        `).join("");
-      } catch (e) {
-        toast("Error al cargar clientes", false);
-      }
-    }
-
-    async function crearCliente() {
+    async function confirmarReserva() {
+      if (!state.habitacion) return toast("Selecciona una habitacion primero", false);
       const nombre = document.getElementById("cliNombre").value.trim();
       const apellido = document.getElementById("cliApellido").value.trim();
       const email = document.getElementById("cliEmail").value.trim();
-      if (!nombre || !apellido || !email) return toast("Completa datos del cliente", false);
+      if (!nombre || !apellido || !email) return toast("Completa nombre, apellido y email", false);
+
       try {
-        const nuevo = await post("/api/clientes", { nombre, apellido, email });
-        showCreatedId("Cliente", nuevo.id);
-        toast("Cliente creado");
-        document.getElementById("cliNombre").value = "";
-        document.getElementById("cliApellido").value = "";
-        document.getElementById("cliEmail").value = "";
-        await Promise.all([cargarClientes(), cargarDashboard()]);
+        const cliente = await post("/api/clientes", { nombre, apellido, email });
+        state.cliente = cliente;
+
+        const reserva = await post("/api/reservas", {
+          fechaEntrada: state.fechaEntrada,
+          fechaSalida: state.fechaSalida,
+          estado: "CONFIRMADA",
+          totalEstancia: state.total,
+          cliente: { id: cliente.id },
+          habitacion: { id: state.habitacion.id }
+        });
+        state.reserva = reserva;
+        state.total = reserva.totalEstancia || state.total;
+
+        document.getElementById("resumenPago").innerHTML = `
+          <div><strong>Cliente:</strong> ${cliente.nombre} ${cliente.apellido}</div>
+          <div><strong>Email:</strong> ${cliente.email}</div>
+          <div><strong>Habitacion:</strong> ${state.habitacion.numero} (${state.habitacion.tipo})</div>
+          <div><strong>Fechas:</strong> ${state.fechaEntrada} a ${state.fechaSalida}</div>
+          <div><strong>Total a pagar:</strong> $${state.total.toLocaleString()}</div>
+          <div><strong>ID Reserva:</strong> #${reserva.id}</div>
+        `;
+        toast(`Reserva #${reserva.id} confirmada`);
+        goStep(3);
       } catch (e) {
-        toast("No se pudo crear cliente", false);
+        toast("No se pudo crear la reserva", false);
       }
     }
 
-    async function eliminarCliente(id) {
-      if (!confirm(`Eliminar cliente #${id}?`)) return;
+    async function pagarAhora() {
+      if (!state.reserva) return toast("No hay reserva para pagar", false);
+      const metodoPago = document.getElementById("metodoPago").value;
       try {
-        await del(`/api/clientes/${id}`);
-        toast("Cliente eliminado");
-        await Promise.all([cargarClientes(), cargarDashboard()]);
-      } catch (e) {
-        toast("Error al eliminar cliente", false);
-      }
-    }
+        const pago = await post("/api/pagos", {
+          monto: state.total,
+          metodoPago,
+          reserva: { id: state.reserva.id }
+        });
+        state.pago = pago;
 
-    async function cargarReservas() {
-      try {
-        const data = await get("/api/reservas");
-        const tbody = document.getElementById("tablaReservas");
-        if (!data.length) {
-          tbody.innerHTML = '<tr><td colspan="7">No hay reservas registradas</td></tr>';
-          return;
+        let factura = null;
+        try {
+          factura = await post("/api/facturas", {
+            total: state.total,
+            fechaEmision: new Date().toISOString().substring(0, 10),
+            reserva: { id: state.reserva.id }
+          });
+        } catch (e) {
+          factura = await get(`/api/facturas/reserva/${state.reserva.id}`);
         }
-        tbody.innerHTML = data.map((r) => `
+        state.factura = factura;
+        renderFactura();
+        toast("Pago realizado y factura disponible");
+        goStep(4);
+      } catch (e) {
+        toast("Error al procesar pago/factura", false);
+      }
+    }
+
+    function renderFactura() {
+      const factura = state.factura;
+      const cliente = state.cliente || {};
+      const habitacion = state.habitacion || {};
+      const fechaEmision = factura?.fechaEmision || new Date().toISOString().substring(0, 10);
+      const total = factura?.total || state.total || 0;
+      const numero = factura?.id || "N/A";
+
+      const html = `
+        <div><strong>Numero de factura:</strong> #${numero}</div>
+        <div><strong>Cliente:</strong> ${cliente.nombre || ""} ${cliente.apellido || ""}</div>
+        <div><strong>Email cliente:</strong> ${cliente.email || "-"}</div>
+        <div><strong>Habitacion:</strong> ${habitacion.numero || "-"} (${habitacion.tipo || "-"})</div>
+        <div><strong>Fechas:</strong> ${state.fechaEntrada || "-"} a ${state.fechaSalida || "-"}</div>
+        <div><strong>Total pagado:</strong> $${total.toLocaleString()}</div>
+        <div><strong>Fecha de emision:</strong> ${fechaEmision}</div>
+      `;
+      document.getElementById("facturaScreen").innerHTML = html;
+      document.getElementById("facturaPrint").innerHTML = `
+        <h2>Grand Hotel - Factura</h2>
+        ${html}
+      `;
+    }
+
+    function imprimirFactura() {
+      if (!state.factura && !state.reserva) return toast("No hay factura para imprimir", false);
+      window.print();
+    }
+
+    function enviarFacturaEmail() {
+      if (!state.cliente?.email) return toast("No hay email de cliente disponible", false);
+      const facturaId = state.factura?.id || "N/A";
+      const total = (state.factura?.total || state.total || 0).toLocaleString();
+      const fecha = state.factura?.fechaEmision || new Date().toISOString().substring(0, 10);
+      const asunto = "Factura Grand Hotel";
+      const cuerpo = [
+        "Hola,",
+        "",
+        "Compartimos los detalles de su factura:",
+        `Factura: #${facturaId}`,
+        `Cliente: ${state.cliente.nombre || ""} ${state.cliente.apellido || ""}`,
+        `Habitacion: ${state.habitacion?.numero || "-"} (${state.habitacion?.tipo || "-"})`,
+        `Fechas: ${state.fechaEntrada || "-"} a ${state.fechaSalida || "-"}`,
+        `Total pagado: $${total}`,
+        `Fecha de emision: ${fecha}`,
+        "",
+        "Gracias por elegir Grand Hotel."
+      ].join("\n");
+      const link = `mailto:${encodeURIComponent(state.cliente.email)}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`;
+      window.location.href = link;
+    }
+
+    function nuevaReserva() {
+      state.fechaEntrada = "";
+      state.fechaSalida = "";
+      state.noches = 0;
+      state.habitacion = null;
+      state.total = 0;
+      state.cliente = null;
+      state.reserva = null;
+      state.pago = null;
+      state.factura = null;
+
+      document.getElementById("fechaEntrada").value = "";
+      document.getElementById("fechaSalida").value = "";
+      document.getElementById("cliNombre").value = "";
+      document.getElementById("cliApellido").value = "";
+      document.getElementById("cliEmail").value = "";
+      document.getElementById("rooms").innerHTML = "";
+      document.getElementById("resumenSeleccion").textContent = "Selecciona una habitacion en el Paso 1.";
+      document.getElementById("resumenPago").textContent = "";
+      document.getElementById("facturaScreen").textContent = "La factura aparecera aqui despues del pago.";
+      document.getElementById("facturaPrint").textContent = "";
+      goStep(1);
+    }
+
+    function reservaBadge(estado) {
+      if (estado === "CONFIRMADA") return '<span class="badge b-conf">CONFIRMADA</span>';
+      if (estado === "ACTIVA") return '<span class="badge b-act">ACTIVA</span>';
+      if (estado === "CANCELADA") return '<span class="badge b-can">CANCELADA</span>';
+      if (estado === "FINALIZADA") return '<span class="badge b-fin">FINALIZADA</span>';
+      return estado || "-";
+    }
+
+    function habitacionBadge(estado) {
+      if (estado === "DISPONIBLE") return '<span class="badge b-disp">DISPONIBLE</span>';
+      if (estado === "OCUPADA") return '<span class="badge b-ocup">OCUPADA</span>';
+      if (estado === "MANTENIMIENTO") return '<span class="badge b-mant">MANTENIMIENTO</span>';
+      return estado || "-";
+    }
+
+    async function loadAdmin() {
+      try {
+        const [reservas, facturas, clientes, habitaciones] = await Promise.all([
+          get("/api/reservas"),
+          get("/api/facturas"),
+          get("/api/clientes"),
+          get("/api/habitaciones")
+        ]);
+
+        const activas = reservas.filter((r) => ["CONFIRMADA", "ACTIVA"].includes(r.estado));
+        const tbRes = document.getElementById("tbReservasActivas");
+        tbRes.innerHTML = activas.length ? activas.map((r) => `
           <tr>
             <td>#${r.id}</td>
-            <td>${r.cliente?.nombre || ("ID " + (r.cliente?.id || "-"))}</td>
+            <td>${r.cliente?.nombre || "ID " + (r.cliente?.id || "-")}</td>
             <td>${r.habitacion?.numero || r.habitacion?.id || "-"}</td>
-            <td>${r.fechaEntrada || "-"}</td>
-            <td>${r.fechaSalida || "-"}</td>
-            <td>${badgeReserva(r.estado)}</td>
-            <td><button class="btn btn-danger" onclick="cancelarReserva(${r.id})">Cancelar</button></td>
+            <td>${r.fechaEntrada || "-"} a ${r.fechaSalida || "-"}</td>
+            <td>${reservaBadge(r.estado)}</td>
+            <td>
+              <button class="btn btn-ok" style="min-height:34px;padding:6px 10px" onclick="checkIn(${r.id})">Check In</button>
+              <button class="btn btn-danger" style="min-height:34px;padding:6px 10px" onclick="checkOut(${r.id})">Check Out</button>
+            </td>
           </tr>
-        `).join("");
+        `).join("") : '<tr><td colspan="6">No hay reservas activas</td></tr>';
+
+        const tbFac = document.getElementById("tbFacturas");
+        tbFac.innerHTML = facturas.length ? facturas.map((f) => `
+          <tr>
+            <td>#${f.id}</td>
+            <td>#${f.reserva?.id || "-"}</td>
+            <td>$${(f.total || 0).toLocaleString()}</td>
+            <td>${f.fechaEmision || "-"}</td>
+          </tr>
+        `).join("") : '<tr><td colspan="4">No hay facturas registradas</td></tr>';
+
+        const tbCli = document.getElementById("tbClientes");
+        tbCli.innerHTML = clientes.length ? clientes.map((c) => `
+          <tr><td>#${c.id}</td><td>${c.nombre} ${c.apellido || ""}</td><td>${c.email || "-"}</td></tr>
+        `).join("") : '<tr><td colspan="3">No hay clientes registrados</td></tr>';
+
+        const tbHab = document.getElementById("tbHabitaciones");
+        tbHab.innerHTML = habitaciones.length ? habitaciones.map((h) => `
+          <tr>
+            <td>#${h.id}</td>
+            <td>${h.numero || "-"}</td>
+            <td>${h.tipo || "-"}</td>
+            <td>$${(h.precioPorNoche || 0).toLocaleString()}</td>
+            <td>${habitacionBadge(h.estado)}</td>
+          </tr>
+        `).join("") : '<tr><td colspan="5">No hay habitaciones registradas</td></tr>';
       } catch (e) {
-        toast("Error al cargar reservas", false);
+        toast("No se pudo cargar el panel de administracion", false);
       }
     }
 
-    async function crearReserva() {
-      const clienteId = parseInt(document.getElementById("resCliente").value, 10);
-      const habitacionId = parseInt(document.getElementById("resHabitacion").value, 10);
-      const fechaEntrada = document.getElementById("resFechaEntrada").value;
-      const fechaSalida = document.getElementById("resFechaSalida").value;
-      if (!clienteId || !habitacionId || !fechaEntrada || !fechaSalida) return toast("Completa datos de reserva", false);
+    async function checkIn(reservaId) {
       try {
-        const nueva = await post("/api/reservas", {
-          fechaEntrada,
-          fechaSalida,
-          estado: "CONFIRMADA",
-          cliente: { id: clienteId },
-          habitacion: { id: habitacionId }
-        });
-        showCreatedId("Reserva", nueva.id);
-        toast("Reserva creada");
-        document.getElementById("resCliente").value = "";
-        document.getElementById("resHabitacion").value = "";
-        await Promise.all([cargarReservas(), cargarDashboard()]);
+        await post(`/api/checkin/${reservaId}`, {});
+        toast(`Check In realizado en reserva #${reservaId}`);
+        await loadAdmin();
       } catch (e) {
-        toast("No se pudo crear reserva", false);
+        toast("Error al hacer Check In", false);
       }
     }
 
-    async function cancelarReserva(id) {
-      if (!confirm(`Cancelar reserva #${id}?`)) return;
+    async function checkOut(reservaId) {
       try {
-        const r = await fetch(`${API}/api/reservas/${id}/cancelar`, { method: "PUT" });
-        if (!r.ok) throw new Error("Error");
-        toast("Reserva cancelada");
-        await Promise.all([cargarReservas(), cargarDashboard()]);
+        await post(`/api/checkout/${reservaId}`, {});
+        toast(`Check Out realizado en reserva #${reservaId}`);
+        await loadAdmin();
       } catch (e) {
-        toast("No se pudo cancelar", false);
+        toast("Error al hacer Check Out", false);
       }
     }
-
-    async function realizarCheckIn() {
-      const id = document.getElementById("checkInId").value;
-      if (!id) return toast("Ingresa ID de reserva", false);
-      try {
-        await post(`/api/checkin/${id}`, {});
-        showCreatedId("Check In aplicado a reserva", id);
-        toast("Check In correcto");
-        document.getElementById("checkInId").value = "";
-        await Promise.all([cargarReservas(), cargarDashboard()]);
-      } catch (e) {
-        toast("Error en Check In", false);
-      }
-    }
-
-    async function realizarCheckOut() {
-      const id = document.getElementById("checkOutId").value;
-      if (!id) return toast("Ingresa ID de reserva", false);
-      try {
-        await post(`/api/checkout/${id}`, {});
-        showCreatedId("Check Out aplicado a reserva", id);
-        toast("Check Out correcto");
-        document.getElementById("checkOutId").value = "";
-        await Promise.all([cargarReservas(), cargarDashboard()]);
-      } catch (e) {
-        toast("Error en Check Out", false);
-      }
-    }
-
-    async function registrarPago() {
-      const reservaId = parseInt(document.getElementById("pagoReserva").value, 10);
-      const monto = parseFloat(document.getElementById("pagoMonto").value);
-      const metodoPago = document.getElementById("pagoMetodo").value;
-      if (!reservaId || !monto) return toast("Completa datos del pago", false);
-      try {
-        const nuevo = await post("/api/pagos", {
-          monto,
-          metodoPago,
-          fechaPago: new Date().toISOString(),
-          reserva: { id: reservaId }
-        });
-        showCreatedId("Pago", nuevo.id);
-        toast("Pago registrado");
-        document.getElementById("pagoReserva").value = "";
-        document.getElementById("pagoMonto").value = "";
-      } catch (e) {
-        toast("No se pudo registrar pago", false);
-      }
-    }
-
-    async function generarFactura() {
-      const reservaId = parseInt(document.getElementById("factReserva").value, 10);
-      const total = parseFloat(document.getElementById("factTotal").value);
-      const fechaEmision = document.getElementById("factFecha").value;
-      if (!reservaId || !total || !fechaEmision) return toast("Completa datos de factura", false);
-      try {
-        const nueva = await post("/api/facturas", {
-          total,
-          fechaEmision,
-          reserva: { id: reservaId }
-        });
-        showCreatedId("Factura", nueva.id);
-        toast("Factura generada");
-        document.getElementById("factReserva").value = "";
-        document.getElementById("factTotal").value = "";
-      } catch (e) {
-        toast("No se pudo generar factura", false);
-      }
-    }
-
-    async function init() {
-      await Promise.all([cargarDashboard(), cargarHabitaciones(), cargarClientes(), cargarReservas()]);
-    }
-
-    init();
   </script>
 </body>
 </html>
