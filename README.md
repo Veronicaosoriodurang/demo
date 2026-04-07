@@ -1,211 +1,92 @@
-Grand Hotel — Sistema de Gestión Hotelera
+﻿Grand Hotel - Sistema de Gestion Hotelera
 ==========================================
 
-Sistema web completo para la gestión de un hotel, desarrollado con Spring Boot y una interfaz moderna diseñada con Cursor AI. Permite gestionar disponibilidad, reservas, pagos y facturas de forma automática.
+Sistema web completo para la gestion de un hotel, desarrollado con Spring Boot y una interfaz moderna disenada con Cursor AI.
 
 ---
 
-1. Descripción
+1. Descripcion
 --------------
 
-Este sistema permite al recepcionista del hotel consultar habitaciones disponibles por fechas, crear reservas, registrar pagos y generar facturas automáticamente. Todo desde una interfaz web sencilla y clara.
+Este sistema permite al recepcionista del hotel consultar habitaciones disponibles por fechas, crear reservas, registrar pagos y generar facturas automaticamente.
 
 ---
 
-2. Cómo usar el sistema
-------------------------
-
-El sistema funciona en 4 pasos:
-
-2.1. Buscar disponibilidad
-Ingresa la fecha de entrada y salida. El sistema muestra las habitaciones libres con foto, tipo, precio por noche y total calculado automáticamente según los días de estadía.
-
-2.2. Registrar el cliente
-Selecciona la habitación. Ingresa nombre, apellido y correo electrónico del cliente. Revisa el resumen con el total a pagar y confirma la reserva.
-
-2.3. Registrar el pago
-Verifica el resumen de la reserva, selecciona el método de pago (Efectivo, Tarjeta Crédito, Tarjeta Débito o Transferencia) y confirma el pago.
-
-2.4. Factura automática
-La factura se genera automáticamente al registrar el pago. Desde esta pantalla puedes imprimirla directamente o enviarla al correo del cliente con un clic.
-
----
-
-3. Tecnologías utilizadas
+2. Tecnologias utilizadas
 --------------------------
 
-| Tecnología            | Versión   | Uso                                      |
-|-----------------------|-----------|------------------------------------------|
-| Java                  | 17        | Lenguaje principal                       |
-| Spring Boot           | 3.5.11    | Framework backend                        |
-| Spring Data JPA       | -         | Acceso a datos con ORM                   |
-| MySQL                 | 8.0.45    | Base de datos relacional                 |
-| Patrón DAO + JDBC     | -         | Acceso manual a BD con PreparedStatement |
-| Swagger / OpenAPI     | 2.8.5     | Documentación de la API                  |
-| Lombok                | 1.18.42   | Reducción de código repetitivo           |
-| Gradle                | 8.14.4    | Gestión de dependencias                  |
-| Git + GitHub          | -         | Control de versiones con branches        |
-| HTML / CSS / JS       | -         | Interfaz frontend                        |
-| IntelliJ IDEA         | 2025.3.3  | IDE de desarrollo                        |
-| Cursor AI             | -         | Diseño y desarrollo de la interfaz web   |
+| Tecnologia        | Version  | Uso                                      |
+|-------------------|----------|------------------------------------------|
+| Java              | 17       | Lenguaje principal                       |
+| Spring Boot       | 3.5.11   | Framework backend                        |
+| MySQL             | 8.0.45   | Base de datos relacional                 |
+| Patron DAO + JDBC | -        | Acceso manual con PreparedStatement      |
+| Swagger / OpenAPI | 2.8.5    | Documentacion de la API                  |
+| Gradle            | 8.14.4   | Gestion de dependencias                  |
+| Git + GitHub      | -        | Control de versiones con branches        |
+| HTML / CSS / JS   | -        | Interfaz frontend                        |
+| IntelliJ IDEA     | 2025.3.3 | IDE de desarrollo                        |
+| Cursor AI         | -        | Diseno y desarrollo de la interfaz web   |
 
 ---
 
-4. Arquitectura del sistema
------------------------------
-
-El proyecto sigue la arquitectura MVC organizada por capas:
+3. Arquitectura
+----------------
 
     src/main/java/com/example/demo/
-        model/          Entidades JPA
-        dao/            Interfaces del patrón DAO
-        dao/impl/       Implementaciones DAO con PreparedStatement
-        service/        Lógica de negocio
-        controller/     Endpoints REST
-        config/         Configuración CORS y conexión a BD
-
-4.1. Entidades principales
-
-    - Cliente     Datos del huésped
-    - Habitacion  Habitaciones con estado: DISPONIBLE, OCUPADA o MANTENIMIENTO
-    - Reserva     Vincula un cliente con una habitación y unas fechas
-    - Pago        Registro del pago de una reserva
-    - Factura     Se genera automáticamente al registrar el pago
-
-4.2. Patrón DAO
-
-El proyecto implementa el patrón DAO manualmente usando JDBC puro:
-
-    - ConexionDB.java       Manejo manual de conexiones con DriverManager
-    - ClienteDAOImpl        SQL: SELECT, INSERT, UPDATE, DELETE con PreparedStatement
-    - HabitacionDAOImpl     SQL: SELECT, INSERT, UPDATE, DELETE con PreparedStatement
-    - ReservaDAOImpl        SQL: SELECT, INSERT, UPDATE, DELETE con PreparedStatement
-    - PagoDAOImpl           SQL: SELECT, INSERT, UPDATE, DELETE con PreparedStatement
-    - FacturaDAOImpl        SQL: SELECT, INSERT, UPDATE, DELETE con PreparedStatement
+        model/       Entidades JPA
+        dao/         Interfaces del patron DAO
+        dao/impl/    Implementaciones DAO con PreparedStatement
+        service/     Logica de negocio
+        controller/  Endpoints REST
+        config/      Configuracion CORS y conexion a BD
 
 ---
 
-5. Endpoints de la API
+4. Endpoints de la API
 -----------------------
 
-5.1. Clientes
-
-| Método | Endpoint              | Descripción              |
-|--------|-----------------------|--------------------------|
-| GET    | /api/clientes         | Listar todos             |
-| POST   | /api/clientes         | Crear cliente            |
-| PUT    | /api/clientes/{id}    | Actualizar cliente       |
-| DELETE | /api/clientes/{id}    | Eliminar cliente         |
-
-5.2. Habitaciones
-
-| Método | Endpoint                                                    | Descripción                         |
-|--------|-------------------------------------------------------------|-------------------------------------|
-| GET    | /api/habitaciones                                           | Listar todas                        |
-| GET    | /api/habitaciones/disponibles?fechaEntrada=X&fechaSalida=Y  | Consultar disponibilidad por fechas |
-| POST   | /api/habitaciones                                           | Crear habitación                    |
-| PUT    | /api/habitaciones/{id}                                      | Actualizar habitación               |
-| DELETE | /api/habitaciones/{id}                                      | Eliminar habitación                 |
-
-5.3. Reservas
-
-| Método | Endpoint                      | Descripción         |
-|--------|-------------------------------|---------------------|
-| GET    | /api/reservas                 | Listar todas        |
-| POST   | /api/reservas                 | Crear reserva       |
-| PUT    | /api/reservas/{id}/cancelar   | Cancelar reserva    |
-| DELETE | /api/reservas/{id}            | Eliminar reserva    |
-
-5.4. Operaciones
-
-| Método | Endpoint                  | Descripción                                     |
-|--------|---------------------------|-------------------------------------------------|
-| POST   | /api/checkin/{reservaId}  | Realizar Check In                               |
-| POST   | /api/checkout/{reservaId} | Realizar Check Out                              |
-| POST   | /api/pagos                | Registrar pago y generar factura automáticamente|
-| GET    | /api/facturas             | Ver todas las facturas                          |
+Clientes: GET, POST, PUT, DELETE en /api/clientes
+Habitaciones: GET, POST, PUT, DELETE en /api/habitaciones
+Reservas: GET, POST, PUT, DELETE en /api/reservas
+Operaciones: POST /api/checkin, POST /api/checkout, POST /api/pagos, GET /api/facturas
 
 ---
 
-6. Cómo correr el proyecto
+5. Como correr el proyecto
 ---------------------------
 
-6.1. Requisitos
+Requisitos: Java 17, IntelliJ IDEA, Git, MySQL 8.0
 
-    - Java 17
-    - IntelliJ IDEA
-    - Git
-    - MySQL 8.0 instalado y corriendo en puerto 3306
-
-6.2. Configurar la base de datos
-
-    1. Abrir MySQL y crear la base de datos:
-       CREATE DATABASE hoteldb;
-
-    2. Las tablas se crean automáticamente al correr el proyecto.
-
-6.3. Pasos
-
-    1. Clonar el repositorio:
-       git clone https://github.com/Veronicaosoriodurang/demo.git
-       cd demo
-
-    2. Compilar el proyecto:
-       .\gradlew build
-
-    3. Correr la aplicación:
-       .\gradlew bootRun
-
-    4. Abrir en el navegador:
-       http://localhost:8080
-
-6.4. URLs disponibles
-
-| URL                                          | Descripción                  |
-|----------------------------------------------|------------------------------|
-| http://localhost:8080                        | Sistema hotelero             |
-| http://localhost:8080/swagger-ui/index.html  | Documentación de la API      |
+1. Crear base de datos: CREATE DATABASE hoteldb;
+2. Clonar: git clone https://github.com/Veronicaosoriodurang/demo.git
+3. Compilar: .\gradlew build
+4. Correr: .\gradlew bootRun
+5. Abrir: http://localhost:8080
 
 ---
 
-7. Base de datos
+6. Base de datos
 -----------------
 
-Se utiliza MySQL 8.0 como base de datos relacional.
-
-    Host            : localhost
-    Puerto          : 3306
-    Base de datos   : hoteldb
-    Usuario         : root
-    Contraseña      : Admin1234
-
-Las tablas se crean automáticamente al iniciar el proyecto gracias a Hibernate DDL.
+    Host     : localhost
+    Puerto   : 3306
+    BD       : hoteldb
+    Usuario  : root
 
 ---
 
-8. Control de versiones
-------------------------
+7. Ramas Git
+-------------
 
-El proyecto usa Git con las siguientes ramas:
-
-    - main              Rama principal estable
-    - develop           Rama de desarrollo
-    - feature/api-hotel Rama de implementación de la API
+    main              Rama principal
+    develop           Rama de desarrollo
+    feature/api-hotel Rama de la API
 
 ---
 
-9. Referencias
----------------
-
-    Repositorio    : https://github.com/Veronicaosoriodurang/demo
-    Documentacion  : http://localhost:8080/swagger-ui/index.html
-
----
-
-10. Autora
------------
+8. Autora
+----------
 
     Veronica Osorio Durang
-    Proyecto de la materia de Programacion de Software
-    Tecnologia en Desarrollo de Software
-    ITM, 2026
+    Programacion de Software - ITM 2026
