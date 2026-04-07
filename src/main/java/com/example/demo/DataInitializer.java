@@ -2,7 +2,7 @@ package com.example.demo;
 
 import com.example.demo.model.EstadoHabitacion;
 import com.example.demo.model.Habitacion;
-import com.example.demo.repository.HabitacionRepository;
+import com.example.demo.dao.HabitacionDAO;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -11,15 +11,15 @@ import java.util.List;
 @Component
 public class DataInitializer implements CommandLineRunner {
 
-    private final HabitacionRepository habitacionRepository;
+    private final HabitacionDAO habitacionDAO;
 
-    public DataInitializer(HabitacionRepository habitacionRepository) {
-        this.habitacionRepository = habitacionRepository;
+    public DataInitializer(HabitacionDAO habitacionDAO) {
+        this.habitacionDAO = habitacionDAO;
     }
 
     @Override
     public void run(String... args) {
-        if (habitacionRepository.count() > 0) {
+        if (!habitacionDAO.findAll().isEmpty()) {
             return;
         }
 
@@ -61,6 +61,6 @@ public class DataInitializer implements CommandLineRunner {
                         .build()
         );
 
-        habitacionRepository.saveAll(habitaciones);
+        habitaciones.forEach(habitacionDAO::save);
     }
 }

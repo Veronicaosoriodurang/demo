@@ -1,9 +1,9 @@
 package com.example.demo.service;
 
+import com.example.demo.dao.FacturaDAO;
+import com.example.demo.dao.PagoDAO;
 import com.example.demo.model.Factura;
 import com.example.demo.model.Pago;
-import com.example.demo.repository.FacturaRepository;
-import com.example.demo.repository.PagoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,19 +15,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PagoService {
 
-    private final PagoRepository pagoRepository;
-    private final FacturaRepository facturaRepository;
+    private final PagoDAO pagoDAO;
+    private final FacturaDAO facturaDAO;
 
     public List<Pago> listarTodos() {
-        return pagoRepository.findAll();
+        return pagoDAO.findAll();
     }
 
     public Pago buscarPorId(Long id) {
-        return pagoRepository.findById(id).orElseThrow();
+        return pagoDAO.findById(id).orElseThrow();
     }
 
     public List<Pago> listarPorReserva(Long reservaId) {
-        return pagoRepository.findByReservaId(reservaId);
+        return pagoDAO.findByReservaId(reservaId);
     }
 
     public Pago registrar(Pago pago) {
@@ -35,21 +35,26 @@ public class PagoService {
             throw new IllegalArgumentException("El pago debe estar asociado a una reserva valida");
         }
         pago.setFechaPago(LocalDateTime.now());
-        Pago pagoGuardado = pagoRepository.save(pago);
+        Pago pagoGuardado = pagoDAO.save(pago);
 
-        Factura factura = facturaRepository.findByReservaId(pagoGuardado.getReserva().getId());
+        Factura factura = facturaDAO.findByReservaId(pagoGuardado.getReserva().getId());
         if (factura == null) {
             factura = Factura.builder().build();
+            factura.setReserva(pagoGuardado.getReserva());
+            factura.setTotal(pagoGuardado.getMonto());
+            factura.setFechaEmision(LocalDate.now());
+            facturaDAO.save(factura);
+        } else {
+            factura.setReserva(pagoGuardado.getReserva());
+            factura.setTotal(pagoGuardado.getMonto());
+            factura.setFechaEmision(LocalDate.now());
+            facturaDAO.update(factura);
         }
-        factura.setReserva(pagoGuardado.getReserva());
-        factura.setTotal(pagoGuardado.getMonto());
-        factura.setFechaEmision(LocalDate.now());
-        facturaRepository.save(factura);
 
         return pagoGuardado;
     }
 
     public void eliminar(Long id) {
-        pagoRepository.deleteById(id);
+        pagoDAO.delete(id);
     }
 }

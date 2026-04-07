@@ -1,7 +1,7 @@
 package com.example.demo.service;
 
+import com.example.demo.dao.FacturaDAO;
 import com.example.demo.model.Factura;
-import com.example.demo.repository.FacturaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -10,25 +10,32 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FacturaService {
 
-    private final FacturaRepository facturaRepository;
+    private final FacturaDAO facturaDAO;
 
     public List<Factura> listarTodas() {
-        return facturaRepository.findAll();
+        return facturaDAO.findAll();
     }
 
     public Factura buscarPorId(Long id) {
-        return facturaRepository.findById(id).orElseThrow();
+        return facturaDAO.findById(id).orElseThrow();
     }
 
     public Factura buscarPorReserva(Long reservaId) {
-        return facturaRepository.findByReservaId(reservaId);
+        return facturaDAO.findByReservaId(reservaId);
     }
 
     public Factura generar(Factura factura) {
-        return facturaRepository.save(factura);
+        Factura existente = facturaDAO.findByReservaId(factura.getReserva().getId());
+        if (existente != null) {
+            existente.setFechaEmision(factura.getFechaEmision());
+            existente.setTotal(factura.getTotal());
+            existente.setReserva(factura.getReserva());
+            return facturaDAO.update(existente);
+        }
+        return facturaDAO.save(factura);
     }
 
     public void eliminar(Long id) {
-        facturaRepository.deleteById(id);
+        facturaDAO.delete(id);
     }
 }

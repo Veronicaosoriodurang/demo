@@ -2,39 +2,48 @@ package com.example.demo.service;
 
 import com.example.demo.model.Habitacion;
 import com.example.demo.model.EstadoHabitacion;
-import com.example.demo.repository.HabitacionRepository;
+import com.example.demo.dao.HabitacionDAO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class HabitacionService {
 
-    private final HabitacionRepository habitacionRepository;
+    private final HabitacionDAO habitacionDAO;
 
     public List<Habitacion> listarTodas() {
-        return habitacionRepository.findAll();
+        return habitacionDAO.findAll();
     }
 
     public Habitacion buscarPorId(Long id) {
-        return habitacionRepository.findById(id).orElseThrow();
+        return habitacionDAO.findById(id).orElseThrow();
     }
 
     public List<Habitacion> listarPorEstado(EstadoHabitacion estado) {
-        return habitacionRepository.findByEstado(estado);
+        return habitacionDAO.findAll().stream()
+                .filter(h -> h.getEstado() == estado)
+                .collect(Collectors.toList());
+    }
+
+    public List<Habitacion> listarDisponibles(LocalDate fechaEntrada, LocalDate fechaSalida) {
+        return habitacionDAO.findDisponibles(fechaEntrada, fechaSalida);
     }
 
     public Habitacion guardar(Habitacion habitacion) {
-        return habitacionRepository.save(habitacion);
+        return habitacionDAO.save(habitacion);
     }
 
     public Habitacion actualizar(Long id, Habitacion habitacion) {
         habitacion.setId(id);
-        return habitacionRepository.save(habitacion);
+        return habitacionDAO.update(habitacion);
     }
 
     public void eliminar(Long id) {
-        habitacionRepository.deleteById(id);
+        habitacionDAO.delete(id);
     }
 }

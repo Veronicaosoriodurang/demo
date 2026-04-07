@@ -1,7 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.model.Cliente;
-import com.example.demo.repository.ClienteRepository;
+import com.example.demo.dao.ClienteDAO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -10,26 +10,26 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ClienteService {
 
-    private final ClienteRepository clienteRepository;
+    private final ClienteDAO clienteDAO;
 
     public List<Cliente> listarTodos() {
-        return clienteRepository.findAll();
+        return clienteDAO.findAll();
     }
 
     public Cliente buscarPorId(Long id) {
-        return clienteRepository.findById(id).orElseThrow();
+        return clienteDAO.findById(id).orElseThrow();
     }
 
     public Cliente guardar(Cliente cliente) {
-        return clienteRepository.save(cliente);
+        return clienteDAO.save(cliente);
     }
 
     public Cliente actualizar(Long id, Cliente cliente) {
         cliente.setId(id);
-        return clienteRepository.save(cliente);
+        return clienteDAO.update(cliente);
     }
 
     public void eliminar(Long id) {
-        clienteRepository.deleteById(id);
+        clienteDAO.delete(id);
     }
 }

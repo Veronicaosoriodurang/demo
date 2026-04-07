@@ -2,7 +2,6 @@ package com.example.demo.controller;
 
 import com.example.demo.model.Habitacion;
 import com.example.demo.model.EstadoHabitacion;
-import com.example.demo.repository.ReservaRepository;
 import com.example.demo.service.HabitacionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/habitaciones")
@@ -18,7 +16,6 @@ import java.util.stream.Collectors;
 public class HabitacionController {
 
     private final HabitacionService habitacionService;
-    private final ReservaRepository reservaRepository;
 
     @GetMapping
     public List<Habitacion> listar() {
@@ -37,10 +34,7 @@ public class HabitacionController {
 
     @GetMapping("/disponibles")
     public List<Habitacion> getDisponibles(@RequestParam LocalDate fechaEntrada, @RequestParam LocalDate fechaSalida) {
-        List<Long> ocupadas = reservaRepository.findHabitacionesOcupadasEntreFechas(fechaEntrada, fechaSalida);
-        return habitacionService.listarTodas().stream()
-                .filter(h -> h.getEstado() == EstadoHabitacion.DISPONIBLE && !ocupadas.contains(h.getId()))
-                .collect(Collectors.toList());
+        return habitacionService.listarDisponibles(fechaEntrada, fechaSalida);
     }
 
     @PostMapping

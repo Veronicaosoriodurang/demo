@@ -1,7 +1,8 @@
 package com.example.demo.service;
 
+import com.example.demo.dao.HabitacionDAO;
+import com.example.demo.dao.ReservaDAO;
 import com.example.demo.model.*;
-import com.example.demo.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -9,15 +10,15 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CheckOutService {
 
-    private final ReservaRepository reservaRepository;
-    private final HabitacionRepository habitacionRepository;
+    private final ReservaDAO reservaDAO;
+    private final HabitacionDAO habitacionDAO;
 
     public Reserva realizarCheckOut(Long reservaId) {
-        Reserva reserva = reservaRepository.findById(reservaId).orElseThrow();
+        Reserva reserva = reservaDAO.findById(reservaId).orElseThrow();
         Habitacion habitacion = reserva.getHabitacion();
         habitacion.setEstado(EstadoHabitacion.DISPONIBLE);
-        habitacionRepository.save(habitacion);
+        habitacionDAO.update(habitacion);
         reserva.setEstado("FINALIZADA");
-        return reservaRepository.save(reserva);
+        return reservaDAO.update(reserva);
     }
 }
