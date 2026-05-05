@@ -26,7 +26,10 @@ Desarrollado como proyecto integrador de la materia Programacion de Software - I
 | MySQL             | 8.0.45   | Base de datos relacional puerto 3306       |
 | JDBC              | -        | Driver de conexion manual a la BD          |
 | Patron DAO        | -        | Capa de persistencia con PreparedStatement |
+| Spring Data JPA   | -        | Acceso a datos con ORM                     |
 | Swagger OpenAPI   | 2.8.5    | Documentacion del servicio REST            |
+| Mockito           | -        | Pruebas unitarias                          |
+| Spring Profiles   | -        | Perfiles dev y prod                        |
 | Gradle            | 8.14.4   | Gestion de dependencias                    |
 | Git + GitHub      | -        | Control de versiones con branches          |
 | HTML CSS JS       | -        | Interfaz frontend                          |
@@ -44,9 +47,10 @@ El proyecto respeta la arquitectura MVC por capas ensenada en clase:
         model/       Entidades que representan las tablas de la BD
         dao/         Interfaces del patron DAO
         dao/impl/    Implementaciones DAO con PreparedStatement y SQL manual
-        service/     Logica de negocio
+        service/     Interfaces de servicio e implementaciones
+        repository/  Repositorios JPA
         controller/  Endpoints REST (GET, POST, PUT, DELETE)
-        config/      Configuracion CORS y conexion a base de datos
+        config/      Configuracion CORS, Swagger y conexion a base de datos
 
 ---
 
@@ -70,7 +74,55 @@ Se implemento el patron DAO manualmente usando JDBC puro sin ORM:
 
 ---
 
-5. Servicios REST implementados
+5. JPA
+-------
+
+Adicionalmente se implemento acceso a datos con JPA:
+
+    ClienteRepository   extends JpaRepository<Cliente, Long>
+    ClienteJpaService   CRUD usando ClienteRepository
+
+El proyecto tiene dos formas de acceder a datos:
+    - SQL manual con PreparedStatement (DAO)
+    - ORM con JPA (ClienteJpaService)
+
+---
+
+6. Desacoplamiento de capas
+-----------------------------
+
+Los controllers inyectan interfaces y no implementaciones directas:
+
+    IClienteService     listar, buscarPorId, guardar, actualizar, eliminar
+    IHabitacionService  listar, buscarPorId, guardar, actualizar, eliminar, buscarDisponibles
+    IReservaService     listar, buscarPorId, guardar, cancelar, eliminar
+
+---
+
+7. Pruebas unitarias
+---------------------
+
+    ClienteServiceTest    Prueba listar, guardar, actualizar y eliminar clientes
+    HabitacionServiceTest Prueba listar y buscar habitaciones disponibles
+    ReservaServiceTest    Prueba crear y cancelar reservas
+
+    Ejecutar pruebas:
+    .\gradlew test
+
+---
+
+8. Perfiles
+------------
+
+    dev   Perfil de desarrollo - muestra SQL en consola
+    prod  Perfil de produccion - oculta SQL, validacion estricta
+
+    Cambiar perfil en application.properties:
+    spring.profiles.active=dev
+
+---
+
+9. Servicios REST implementados
 ---------------------------------
 
 Clientes
@@ -89,11 +141,11 @@ Habitaciones
     DELETE /api/habitaciones/{id}                                   Eliminar
 
 Reservas
-    GET    /api/reservas              Listar todas
-    GET    /api/reservas/{id}         Buscar por ID
-    POST   /api/reservas              Crear reserva
+    GET    /api/reservas               Listar todas
+    GET    /api/reservas/{id}          Buscar por ID
+    POST   /api/reservas               Crear reserva
     PUT    /api/reservas/{id}/cancelar Cancelar reserva
-    DELETE /api/reservas/{id}         Eliminar
+    DELETE /api/reservas/{id}          Eliminar
 
 Operaciones
     POST   /api/checkin/{reservaId}   Realizar Check In
@@ -103,7 +155,7 @@ Operaciones
 
 ---
 
-6. Documentacion Swagger
+10. Documentacion Swagger
 --------------------------
 
 El servicio web esta documentado con Swagger OpenAPI 2.8.5.
@@ -113,8 +165,8 @@ Muestra todos los endpoints con sus parametros, tipos de datos y respuestas.
 
 ---
 
-7. Como correr el proyecto
----------------------------
+11. Como correr el proyecto
+----------------------------
 
 Requisitos:
     - Java 17
@@ -142,10 +194,13 @@ Pasos:
     6. Ver documentacion Swagger:
        http://localhost:8080/swagger-ui/index.html
 
+    7. Ejecutar pruebas:
+       .\gradlew test
+
 ---
 
-8. Base de datos MySQL
------------------------
+12. Base de datos MySQL
+------------------------
 
     Host          : localhost
     Puerto        : 3306
@@ -154,12 +209,11 @@ Pasos:
     Contrasena    : Admin1234
 
 Las tablas se crean automaticamente al iniciar el proyecto.
-Se puede verificar con MySQL Workbench conectandose a localhost:3306.
 
 ---
 
-9. Control de versiones
-------------------------
+13. Control de versiones
+-------------------------
 
 Repositorio: https://github.com/Veronicaosoriodurang/demo
 
@@ -170,7 +224,7 @@ Ramas utilizadas:
 
 ---
 
-10. Autora
+14. Autora
 -----------
 
     Veronica Osorio Durango
@@ -178,4 +232,4 @@ Ramas utilizadas:
     Programa: Tecnologia en Desarrollo de Software
     Institucion: ITM
     Periodo: 2026-1
-    Segunda entrega - Semana 8
+    Entrega 3 - Semana 12
