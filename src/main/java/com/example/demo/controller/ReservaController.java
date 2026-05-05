@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.Reserva;
-import com.example.demo.service.ReservaService;
+import com.example.demo.service.IReservaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -15,12 +15,12 @@ import java.util.List;
 @Tag(name = "Reservas", description = "Operaciones sobre reservas")
 public class ReservaController {
 
-    private final ReservaService reservaService;
+    private final IReservaService reservaService;
 
     @GetMapping
     @Operation(summary = "Listar todas las reservas")
     public List<Reserva> listar() {
-        return reservaService.listarTodas();
+        return reservaService.listar();
     }
 
     @GetMapping("/{id}")

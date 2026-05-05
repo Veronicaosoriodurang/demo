@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.Cliente;
-import com.example.demo.service.ClienteService;
+import com.example.demo.service.IClienteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -15,12 +15,12 @@ import java.util.List;
 @Tag(name = "Clientes", description = "Operaciones sobre clientes")
 public class ClienteController {
 
-    private final ClienteService clienteService;
+    private final IClienteService clienteService;
 
     @GetMapping
     @Operation(summary = "Listar todos los clientes")
     public List<Cliente> listar() {
-        return clienteService.listarTodos();
+        return clienteService.listar();
     }
 
     @GetMapping("/{id}")

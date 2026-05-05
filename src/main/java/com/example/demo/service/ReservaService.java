@@ -13,25 +13,29 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ReservaService {
+public class ReservaService implements IReservaService {
 
     private final ReservaDAO reservaDAO;
     private final HabitacionDAO habitacionDAO;
 
-    public List<Reserva> listarTodas() {
+    @Override
+    public List<Reserva> listar() {
         return reservaDAO.findAll();
     }
 
+    @Override
     public Reserva buscarPorId(Long id) {
         return reservaDAO.findById(id).orElseThrow();
     }
 
+    @Override
     public List<Reserva> listarPorCliente(Long clienteId) {
         return reservaDAO.findAll().stream()
                 .filter(r -> r.getCliente() != null && clienteId.equals(r.getCliente().getId()))
                 .collect(Collectors.toList());
     }
 
+    @Override
     public Reserva guardar(Reserva reserva) {
         if (reserva.getHabitacion() == null || reserva.getHabitacion().getId() == null) {
             throw new IllegalArgumentException("La reserva debe incluir una habitacion valida");
@@ -52,12 +56,14 @@ public class ReservaService {
         return reservaDAO.save(reserva);
     }
 
+    @Override
     public void cancelar(Long id) {
         Reserva reserva = buscarPorId(id);
         reserva.setEstado("CANCELADA");
         reservaDAO.update(reserva);
     }
 
+    @Override
     public void eliminar(Long id) {
         reservaDAO.delete(id);
     }

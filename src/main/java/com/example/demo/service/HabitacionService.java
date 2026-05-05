@@ -12,37 +12,44 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class HabitacionService {
+public class HabitacionService implements IHabitacionService {
 
     private final HabitacionDAO habitacionDAO;
 
-    public List<Habitacion> listarTodas() {
+    @Override
+    public List<Habitacion> listar() {
         return habitacionDAO.findAll();
     }
 
+    @Override
     public Habitacion buscarPorId(Long id) {
         return habitacionDAO.findById(id).orElseThrow();
     }
 
+    @Override
     public List<Habitacion> listarPorEstado(EstadoHabitacion estado) {
         return habitacionDAO.findAll().stream()
                 .filter(h -> h.getEstado() == estado)
                 .collect(Collectors.toList());
     }
 
-    public List<Habitacion> listarDisponibles(LocalDate fechaEntrada, LocalDate fechaSalida) {
+    @Override
+    public List<Habitacion> buscarDisponibles(LocalDate fechaEntrada, LocalDate fechaSalida) {
         return habitacionDAO.findDisponibles(fechaEntrada, fechaSalida);
     }
 
+    @Override
     public Habitacion guardar(Habitacion habitacion) {
         return habitacionDAO.save(habitacion);
     }
 
+    @Override
     public Habitacion actualizar(Long id, Habitacion habitacion) {
         habitacion.setId(id);
         return habitacionDAO.update(habitacion);
     }
 
+    @Override
     public void eliminar(Long id) {
         habitacionDAO.delete(id);
     }

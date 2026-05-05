@@ -1,40 +1,36 @@
 package com.example.demo.service;
 
 import com.example.demo.model.Cliente;
-import com.example.demo.dao.ClienteDAO;
+import com.example.demo.repository.ClienteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ClienteService implements IClienteService {
+public class ClienteJpaService {
 
-    private final ClienteDAO clienteDAO;
+    private final ClienteRepository clienteRepository;
 
-    @Override
     public List<Cliente> listar() {
-        return clienteDAO.findAll();
+        return clienteRepository.findAll();
     }
 
-    @Override
     public Cliente buscarPorId(Long id) {
-        return clienteDAO.findById(id).orElseThrow();
+        return clienteRepository.findById(id).orElseThrow();
     }
 
-    @Override
     public Cliente guardar(Cliente cliente) {
-        return clienteDAO.save(cliente);
+        return clienteRepository.save(cliente);
     }
 
-    @Override
     public Cliente actualizar(Long id, Cliente cliente) {
         cliente.setId(id);
-        return clienteDAO.update(cliente);
+        return clienteRepository.save(cliente);
     }
 
-    @Override
     public void eliminar(Long id) {
-        clienteDAO.delete(id);
+        clienteRepository.deleteById(id);
     }
 }

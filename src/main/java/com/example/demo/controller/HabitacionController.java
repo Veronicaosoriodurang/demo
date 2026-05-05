@@ -2,7 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.model.Habitacion;
 import com.example.demo.model.EstadoHabitacion;
-import com.example.demo.service.HabitacionService;
+import com.example.demo.service.IHabitacionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -18,12 +18,12 @@ import java.util.List;
 @Tag(name = "Habitaciones", description = "Operaciones sobre habitaciones")
 public class HabitacionController {
 
-    private final HabitacionService habitacionService;
+    private final IHabitacionService habitacionService;
 
     @GetMapping
     @Operation(summary = "Listar todas las habitaciones")
     public List<Habitacion> listar() {
-        return habitacionService.listarTodas();
+        return habitacionService.listar();
     }
 
     @GetMapping("/{id}")
@@ -41,7 +41,7 @@ public class HabitacionController {
     @GetMapping("/disponibles")
     @Operation(summary = "Listar todas las habitaciones")
     public List<Habitacion> getDisponibles(@RequestParam LocalDate fechaEntrada, @RequestParam LocalDate fechaSalida) {
-        return habitacionService.listarDisponibles(fechaEntrada, fechaSalida);
+        return habitacionService.buscarDisponibles(fechaEntrada, fechaSalida);
     }
 
     @PostMapping
