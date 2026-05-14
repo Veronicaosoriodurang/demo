@@ -1,23 +1,23 @@
 Grand Hotel - Sistema de Gestion Hotelera
 ==========================================
 
-Sistema web completo para la gestion de un hotel desarrollado con Spring Boot.
-Implementa servicios web tipo REST con arquitectura por capas, patron DAO,
-conexion manual a MySQL y documentacion con Swagger.
+Sistema completo de gestion hotelera desarrollado con Spring Boot y MySQL.
+Incluye API REST con arquitectura por capas, patron DAO manual, Swagger,
+pruebas unitarias, perfiles dev/prod y frontend independiente en HTML/JS.
 
 ---
 
 1. Descripcion
 --------------
 
-Sistema de gestion hotelera que permite consultar disponibilidad de habitaciones,
-crear reservas, registrar pagos y generar facturas automaticamente.
-Desarrollado como proyecto integrador de la materia Programacion de Software - ITM.
+Sistema que permite gestionar clientes, habitaciones, reservas, pagos
+y facturas. Desarrollado como proyecto integrador de la materia
+Programacion de Software en el ITM 2026-1.
 
 ---
 
-2. Tecnologias utilizadas
---------------------------
+2. Tecnologias
+--------------
 
 | Tecnologia        | Version  | Uso                                        |
 |-------------------|----------|--------------------------------------------|
@@ -27,21 +27,17 @@ Desarrollado como proyecto integrador de la materia Programacion de Software - I
 | JDBC              | -        | Driver de conexion manual a la BD          |
 | Patron DAO        | -        | Capa de persistencia con PreparedStatement |
 | Spring Data JPA   | -        | Acceso a datos con ORM                     |
-| Swagger OpenAPI   | 2.8.5    | Documentacion del servicio REST            |
+| Swagger OpenAPI   | 2.8.5    | Documentacion de la API                    |
 | Mockito           | -        | Pruebas unitarias                          |
 | Spring Profiles   | -        | Perfiles dev y prod                        |
 | Gradle            | 8.14.4   | Gestion de dependencias                    |
 | Git + GitHub      | -        | Control de versiones con branches          |
-| HTML CSS JS       | -        | Interfaz frontend                          |
-| IntelliJ IDEA     | 2025.3.3 | IDE de desarrollo                          |
-| Cursor AI         | -        | Diseno de la interfaz web                  |
+| HTML CSS JS       | -        | Frontend independiente                     |
 
 ---
 
 3. Arquitectura por capas
 --------------------------
-
-El proyecto respeta la arquitectura MVC por capas ensenada en clase:
 
     src/main/java/com/example/demo/
         model/       Entidades que representan las tablas de la BD
@@ -49,40 +45,36 @@ El proyecto respeta la arquitectura MVC por capas ensenada en clase:
         dao/impl/    Implementaciones DAO con PreparedStatement y SQL manual
         service/     Interfaces de servicio e implementaciones
         repository/  Repositorios JPA
-        controller/  Endpoints REST (GET, POST, PUT, DELETE)
-        config/      Configuracion CORS, Swagger y conexion a base de datos
+        controller/  Endpoints REST
+        config/      Configuracion CORS, Swagger y conexion a BD
 
 ---
 
 4. Patron DAO y conexion manual
 ---------------------------------
 
-Se implemento el patron DAO manualmente usando JDBC puro sin ORM:
+    ConexionDB.java     Conexion manual con DriverManager.getConnection()
+                        Conexiones cerradas en bloque finally
 
-    ConexionDB.java     Clase de conexion con DriverManager.getConnection()
-                        Manejo de conexiones con bloque finally para cerrarlas
-
-    ClienteDAOImpl      INSERT INTO clientes (nombre, apellido, email) VALUES (?, ?, ?)
-                        SELECT id, nombre, apellido, email FROM clientes
+    ClienteDAOImpl      SELECT id, nombre, apellido, email FROM clientes
+                        INSERT INTO clientes (nombre, apellido, email) VALUES (?, ?, ?)
                         UPDATE clientes SET nombre=?, apellido=?, email=? WHERE id=?
                         DELETE FROM clientes WHERE id=?
 
-    HabitacionDAOImpl   CRUD completo sobre tabla habitaciones con PreparedStatement
-    ReservaDAOImpl      CRUD completo sobre tabla reservas con PreparedStatement
-    PagoDAOImpl         CRUD completo sobre tabla pagos con PreparedStatement
-    FacturaDAOImpl      CRUD completo sobre tabla facturas con PreparedStatement
+    HabitacionDAOImpl   CRUD completo con PreparedStatement
+    ReservaDAOImpl      CRUD completo con PreparedStatement
+    PagoDAOImpl         CRUD completo con PreparedStatement
+    FacturaDAOImpl      CRUD completo con PreparedStatement
 
 ---
 
 5. JPA
 -------
 
-Adicionalmente se implemento acceso a datos con JPA:
-
     ClienteRepository   extends JpaRepository<Cliente, Long>
     ClienteJpaService   CRUD usando ClienteRepository
 
-El proyecto tiene dos formas de acceder a datos:
+El proyecto implementa las dos formas de acceso a datos:
     - SQL manual con PreparedStatement (DAO)
     - ORM con JPA (ClienteJpaService)
 
@@ -91,10 +83,8 @@ El proyecto tiene dos formas de acceder a datos:
 6. Desacoplamiento de capas
 -----------------------------
 
-Los controllers inyectan interfaces y no implementaciones directas:
-
     IClienteService     listar, buscarPorId, guardar, actualizar, eliminar
-    IHabitacionService  listar, buscarPorId, guardar, actualizar, eliminar, buscarDisponibles
+    IHabitacionService  listar, buscarPorId, guardar, actualizar, eliminar
     IReservaService     listar, buscarPorId, guardar, cancelar, eliminar
 
 ---
@@ -102,11 +92,11 @@ Los controllers inyectan interfaces y no implementaciones directas:
 7. Pruebas unitarias
 ---------------------
 
-    ClienteServiceTest    Prueba listar, guardar, actualizar y eliminar clientes
-    HabitacionServiceTest Prueba listar y buscar habitaciones disponibles
+    ClienteServiceTest    Prueba listar, guardar, actualizar y eliminar
+    HabitacionServiceTest Prueba listar y buscar disponibles
     ReservaServiceTest    Prueba crear y cancelar reservas
 
-    Ejecutar pruebas:
+    Ejecutar:
     .\gradlew test
 
 ---
@@ -114,93 +104,85 @@ Los controllers inyectan interfaces y no implementaciones directas:
 8. Perfiles
 ------------
 
-    dev   Perfil de desarrollo - muestra SQL en consola
-    prod  Perfil de produccion - oculta SQL, validacion estricta
+    dev   Desarrollo - muestra SQL en consola
+    prod  Produccion - oculta SQL
 
-    Cambiar perfil en application.properties:
+    Activar en application.properties:
     spring.profiles.active=dev
 
 ---
 
-9. Servicios REST implementados
----------------------------------
+9. Endpoints de la API
+-----------------------
 
 Clientes
-    GET    /api/clientes          Listar todos los clientes
-    GET    /api/clientes/{id}     Buscar cliente por ID
-    POST   /api/clientes          Crear nuevo cliente
-    PUT    /api/clientes/{id}     Actualizar cliente
-    DELETE /api/clientes/{id}     Eliminar cliente
+    GET    /api/clientes          Listar todos
+    GET    /api/clientes/{id}     Buscar por ID
+    POST   /api/clientes          Crear
+    PUT    /api/clientes/{id}     Actualizar
+    DELETE /api/clientes/{id}     Eliminar
 
 Habitaciones
-    GET    /api/habitaciones                                        Listar todas
-    GET    /api/habitaciones/{id}                                   Buscar por ID
-    GET    /api/habitaciones/disponibles?fechaEntrada=X&fechaSalida=Y  Disponibilidad
-    POST   /api/habitaciones                                        Crear habitacion
-    PUT    /api/habitaciones/{id}                                   Actualizar
-    DELETE /api/habitaciones/{id}                                   Eliminar
+    GET    /api/habitaciones                                       Listar todas
+    GET    /api/habitaciones/{id}                                  Buscar por ID
+    GET    /api/habitaciones/disponibles?fechaEntrada=X&fechaSalida=Y
+    POST   /api/habitaciones                                       Crear
+    PUT    /api/habitaciones/{id}                                  Actualizar
+    DELETE /api/habitaciones/{id}                                  Eliminar
 
 Reservas
     GET    /api/reservas               Listar todas
-    GET    /api/reservas/{id}          Buscar por ID
-    POST   /api/reservas               Crear reserva
-    PUT    /api/reservas/{id}/cancelar Cancelar reserva
+    POST   /api/reservas               Crear
+    PUT    /api/reservas/{id}/cancelar Cancelar
     DELETE /api/reservas/{id}          Eliminar
 
 Operaciones
-    POST   /api/checkin/{reservaId}   Realizar Check In
-    POST   /api/checkout/{reservaId}  Realizar Check Out
-    POST   /api/pagos                 Registrar pago
-    GET    /api/facturas              Ver facturas
+    POST   /api/checkin/{reservaId}    Check In
+    POST   /api/checkout/{reservaId}   Check Out
+    POST   /api/pagos                  Registrar pago
+    GET    /api/facturas               Ver facturas
 
 ---
 
-10. Documentacion Swagger
---------------------------
+10. Swagger
+------------
 
-El servicio web esta documentado con Swagger OpenAPI 2.8.5.
-Disponible en: http://localhost:8080/swagger-ui/index.html
-
-Muestra todos los endpoints con sus parametros, tipos de datos y respuestas.
+    http://localhost:8080/swagger-ui/index.html
 
 ---
 
 11. Como correr el proyecto
-----------------------------
+-----------------------------
 
 Requisitos:
     - Java 17
-    - IntelliJ IDEA
+    - MySQL 8.0 corriendo en puerto 3306
     - Git
-    - MySQL 8.0 instalado y corriendo en puerto 3306
 
 Pasos:
-    1. Crear la base de datos en MySQL:
+    1. Crear la base de datos:
        CREATE DATABASE hoteldb;
 
     2. Clonar el repositorio:
        git clone https://github.com/Veronicaosoriodurang/demo.git
        cd demo
 
-    3. Compilar el proyecto:
+    3. Compilar:
        .\gradlew build
 
-    4. Correr la aplicacion:
+    4. Correr:
        .\gradlew bootRun
 
-    5. Abrir en el navegador:
+    5. Abrir:
        http://localhost:8080
 
-    6. Ver documentacion Swagger:
-       http://localhost:8080/swagger-ui/index.html
-
-    7. Ejecutar pruebas:
+    6. Pruebas:
        .\gradlew test
 
 ---
 
-12. Base de datos MySQL
-------------------------
+12. Base de datos
+------------------
 
     Host          : localhost
     Puerto        : 3306
@@ -208,23 +190,33 @@ Pasos:
     Usuario       : root
     Contrasena    : Admin1234
 
-Las tablas se crean automaticamente al iniciar el proyecto.
+---
+
+13. Frontend independiente
+---------------------------
+
+Proyecto frontend separado en HTML, CSS y JavaScript puro.
+Consume la API REST del backend.
+
+    Repositorio : https://github.com/Veronicaosoriodurang/hotel-frontend
+    Uso         : Abrir index.html con el backend corriendo en localhost:8080
+    CRUD        : Gestion completa de clientes
 
 ---
 
-13. Control de versiones
+14. Control de versiones
 -------------------------
 
-Repositorio: https://github.com/Veronicaosoriodurang/demo
+    Repositorio : https://github.com/Veronicaosoriodurang/demo
 
-Ramas utilizadas:
-    main              Rama principal estable
+    Ramas:
+    main              Rama principal
     develop           Rama de desarrollo
-    feature/api-hotel Rama de implementacion de la API REST
+    feature/api-hotel Rama de la API REST
 
 ---
 
-14. Autora
+15. Autora
 -----------
 
     Veronica Osorio Durango
@@ -232,4 +224,3 @@ Ramas utilizadas:
     Programa: Tecnologia en Desarrollo de Software
     Institucion: ITM
     Periodo: 2026-1
-    Entrega 3 - Semana 12
