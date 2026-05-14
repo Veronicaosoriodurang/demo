@@ -27,7 +27,7 @@ public class ClienteDAOImpl implements ClienteDAO {
         ResultSet rs = null;
         try {
             conn = conexionDB.getConnection();
-            stmt = conn.prepareStatement("SELECT id, nombre, apellido, email FROM clientes");
+            stmt = conn.prepareStatement("SELECT id, nombre, apellido, email, telefono, documento FROM clientes");
             rs = stmt.executeQuery();
             while (rs.next()) {
                 clientes.add(mapCliente(rs));
@@ -49,7 +49,7 @@ public class ClienteDAOImpl implements ClienteDAO {
         ResultSet rs = null;
         try {
             conn = conexionDB.getConnection();
-            stmt = conn.prepareStatement("SELECT id, nombre, apellido, email FROM clientes WHERE id = ?");
+            stmt = conn.prepareStatement("SELECT id, nombre, apellido, email, telefono, documento FROM clientes WHERE id = ?");
             stmt.setLong(1, id);
             rs = stmt.executeQuery();
             if (rs.next()) {
@@ -73,12 +73,14 @@ public class ClienteDAOImpl implements ClienteDAO {
         try {
             conn = conexionDB.getConnection();
             stmt = conn.prepareStatement(
-                    "INSERT INTO clientes (nombre, apellido, email) VALUES (?, ?, ?)",
+                    "INSERT INTO clientes (nombre, apellido, email, telefono, documento) VALUES (?, ?, ?, ?, ?)",
                     Statement.RETURN_GENERATED_KEYS
             );
             stmt.setString(1, cliente.getNombre());
             stmt.setString(2, cliente.getApellido());
             stmt.setString(3, cliente.getEmail());
+            stmt.setString(4, cliente.getTelefono());
+            stmt.setString(5, cliente.getDocumentoTexto());
             stmt.executeUpdate();
             rs = stmt.getGeneratedKeys();
             if (rs.next()) {
@@ -101,12 +103,14 @@ public class ClienteDAOImpl implements ClienteDAO {
         try {
             conn = conexionDB.getConnection();
             stmt = conn.prepareStatement(
-                    "UPDATE clientes SET nombre = ?, apellido = ?, email = ? WHERE id = ?"
+                    "UPDATE clientes SET nombre = ?, apellido = ?, email = ?, telefono = ?, documento = ? WHERE id = ?"
             );
             stmt.setString(1, cliente.getNombre());
             stmt.setString(2, cliente.getApellido());
             stmt.setString(3, cliente.getEmail());
-            stmt.setLong(4, cliente.getId());
+            stmt.setString(4, cliente.getTelefono());
+            stmt.setString(5, cliente.getDocumentoTexto());
+            stmt.setLong(6, cliente.getId());
             stmt.executeUpdate();
             return cliente;
         } catch (SQLException e) {
@@ -140,6 +144,8 @@ public class ClienteDAOImpl implements ClienteDAO {
         cliente.setNombre(rs.getString("nombre"));
         cliente.setApellido(rs.getString("apellido"));
         cliente.setEmail(rs.getString("email"));
+        cliente.setTelefono(rs.getString("telefono"));
+        cliente.setDocumentoTexto(rs.getString("documento"));
         return cliente;
     }
 }

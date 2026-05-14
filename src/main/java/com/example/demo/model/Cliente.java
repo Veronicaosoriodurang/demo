@@ -19,6 +19,10 @@ public class Cliente {
     private String nombre;
     private String apellido;
     private String email;
+    private String telefono;
+
+    @Column(name = "documento")
+    private String documentoTexto;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "documento_id")
