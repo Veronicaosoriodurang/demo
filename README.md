@@ -1,38 +1,17 @@
-# Grand Hotel — Backend
+# Grand Hotel — Sistema de Gestion Hotelera
 
-Sistema de gestion hotelera desarrollado con Spring Boot y MySQL.
-
-> Para el frontend ver: [hotel-frontend](https://github.com/Veronicaosoriodurang/hotel-frontend)
-
----
-
-## Navegacion rapida
-
-- [Como correr el proyecto](#como-correr-el-proyecto)
-- [Tecnologias](#tecnologias)
-- [Arquitectura](#arquitectura)
-- [Patron DAO](#patron-dao)
-- [JPA](#jpa)
-- [Pruebas unitarias](#pruebas-unitarias)
-- [Perfiles](#perfiles)
-- [Endpoints](#endpoints)
-- [Swagger](#swagger)
-- [Frontend](#frontend)
-- [Autora](#autora)
+Sistema completo de gestion hotelera desarrollado con Spring Boot y MySQL.
+Incluye API REST con arquitectura por capas, patron DAO manual, Swagger,
+pruebas unitarias, perfiles dev/prod y frontend independiente en HTML/JS.
 
 ---
 
-## Como correr el proyecto
+## Como revisar el proyecto
 
-**Requisitos:**
-- Java 17
-- MySQL 8.0 corriendo en puerto 3306
-- Git
-
-**Pasos:**
+### Backend
 
 ```bash
-# 1. Clonar
+# 1. Clonar el repositorio
 git clone https://github.com/Veronicaosoriodurang/demo.git
 cd demo
 
@@ -46,78 +25,97 @@ CREATE DATABASE hoteldb;
 .\gradlew bootRun
 ```
 
-**URLs disponibles:**
+Abrir en el navegador:
+- Sistema: http://localhost:8080
+- Swagger: http://localhost:8080/swagger-ui/index.html
 
-| URL | Descripcion |
-|-----|-------------|
-| http://localhost:8080 | Sistema hotelero |
-| http://localhost:8080/swagger-ui/index.html | Documentacion API |
+### Frontend
+
+```bash
+# Clonar el repositorio del frontend
+git clone https://github.com/Veronicaosoriodurang/hotel-frontend.git
+```
+
+Con el backend corriendo, abrir el archivo `index.html` en el navegador.
+La pagina carga automaticamente los clientes y permite crear, editar y eliminar.
+
+---
+
+## Descripcion
+
+Sistema que permite gestionar clientes, habitaciones, reservas, pagos y facturas
+a traves de una API REST. Desarrollado como proyecto integrador de la materia
+Programacion de Software en el ITM 2026-1.
 
 ---
 
 ## Tecnologias
 
-| Tecnologia | Version | Uso |
-|------------|---------|-----|
-| Java | 17 | Lenguaje principal |
-| Spring Boot | 3.5.11 | Framework backend |
-| MySQL | 8.0.45 | Base de datos relacional |
-| JDBC | - | Driver de conexion manual |
-| Patron DAO | - | PreparedStatement y SQL manual |
-| Spring Data JPA | - | ORM para acceso a datos |
-| Swagger OpenAPI | 2.8.5 | Documentacion de la API |
-| Mockito | - | Pruebas unitarias |
-| Spring Profiles | - | Perfiles dev y prod |
-| Gradle | 8.14.4 | Gestion de dependencias |
-| Git + GitHub | - | Control de versiones |
+| Tecnologia        | Version  | Uso                                        |
+|-------------------|----------|--------------------------------------------|
+| Java              | 17       | Lenguaje principal                         |
+| Spring Boot       | 3.5.11   | Framework backend                          |
+| MySQL             | 8.0.45   | Base de datos relacional puerto 3306       |
+| JDBC              | -        | Driver de conexion manual a la BD          |
+| Patron DAO        | -        | Capa de persistencia con PreparedStatement |
+| Spring Data JPA   | -        | Acceso a datos con ORM                     |
+| Swagger OpenAPI   | 2.8.5    | Documentacion de la API                    |
+| Mockito           | -        | Pruebas unitarias                          |
+| Spring Profiles   | -        | Perfiles dev y prod                        |
+| Gradle            | 8.14.4   | Gestion de dependencias                    |
+| Git + GitHub      | -        | Control de versiones con branches          |
+| HTML CSS JS       | -        | Frontend independiente                     |
 
 ---
 
-## Arquitectura
+## Arquitectura por capas
 
 ```
 src/main/java/com/example/demo/
-    model/       Entidades de la base de datos
+    model/       Entidades que representan las tablas de la BD
     dao/         Interfaces del patron DAO
-    dao/impl/    Implementaciones con PreparedStatement
-    service/     Interfaces y logica de negocio
+    dao/impl/    Implementaciones DAO con PreparedStatement y SQL manual
+    service/     Interfaces de servicio e implementaciones
     repository/  Repositorios JPA
     controller/  Endpoints REST
-    config/      CORS, Swagger y conexion a BD
+    config/      Configuracion CORS, Swagger y conexion a BD
 ```
 
 ---
 
-## Patron DAO
+## Patron DAO y conexion manual
 
-Conexion manual a MySQL con `DriverManager`. Conexiones cerradas en bloque `finally`.
-
-```sql
--- ClienteDAOImpl
-SELECT id, nombre, apellido, email FROM clientes
-INSERT INTO clientes (nombre, apellido, email) VALUES (?, ?, ?)
-UPDATE clientes SET nombre=?, apellido=?, email=? WHERE id=?
-DELETE FROM clientes WHERE id=?
 ```
+ConexionDB.java     Conexion con DriverManager.getConnection()
+                    Conexiones cerradas en bloque finally
 
-Lo mismo para: `HabitacionDAOImpl`, `ReservaDAOImpl`, `PagoDAOImpl`, `FacturaDAOImpl`
+ClienteDAOImpl      SELECT id, nombre, apellido, email FROM clientes
+                    INSERT INTO clientes (nombre, apellido, email) VALUES (?, ?, ?)
+                    UPDATE clientes SET nombre=?, apellido=?, email=? WHERE id=?
+                    DELETE FROM clientes WHERE id=?
+
+HabitacionDAOImpl   CRUD completo con PreparedStatement
+ReservaDAOImpl      CRUD completo con PreparedStatement
+PagoDAOImpl         CRUD completo con PreparedStatement
+FacturaDAOImpl      CRUD completo con PreparedStatement
+```
 
 ---
 
 ## JPA
 
-```java
-ClienteRepository  // extends JpaRepository<Cliente, Long>
-ClienteJpaService  // CRUD usando JPA
+```
+ClienteRepository   extends JpaRepository<Cliente, Long>
+ClienteJpaService   CRUD usando ClienteRepository
 ```
 
-El proyecto implementa **SQL manual (DAO)** y **ORM (JPA)**.
+El proyecto implementa las dos formas de acceso a datos:
+- SQL manual con PreparedStatement (DAO)
+- ORM con JPA (ClienteJpaService)
 
 ---
 
-## Desacoplamiento
-
-Los controllers inyectan interfaces, no implementaciones directas:
+## Desacoplamiento de capas
 
 ```
 IClienteService     listar, buscarPorId, guardar, actualizar, eliminar
@@ -125,14 +123,16 @@ IHabitacionService  listar, buscarPorId, guardar, actualizar, eliminar
 IReservaService     listar, buscarPorId, guardar, cancelar, eliminar
 ```
 
+Los controllers inyectan las interfaces, no las implementaciones directas.
+
 ---
 
 ## Pruebas unitarias
 
 ```
-ClienteServiceTest    listar, guardar, actualizar, eliminar
-HabitacionServiceTest listar, buscar disponibles
-ReservaServiceTest    crear, cancelar
+ClienteServiceTest    Prueba listar, guardar, actualizar y eliminar
+HabitacionServiceTest Prueba listar y buscar disponibles
+ReservaServiceTest    Prueba crear y cancelar reservas
 ```
 
 ```bash
@@ -143,18 +143,19 @@ ReservaServiceTest    crear, cancelar
 
 ## Perfiles
 
-| Perfil | Uso |
-|--------|-----|
-| dev | Desarrollo — muestra SQL en consola |
-| prod | Produccion — oculta SQL |
+```
+dev   Desarrollo - muestra SQL en consola
+prod  Produccion - oculta SQL
+```
 
+Configurar en `application.properties`:
 ```properties
 spring.profiles.active=dev
 ```
 
 ---
 
-## Endpoints
+## Endpoints de la API
 
 ### Clientes
 | Metodo | Endpoint | Descripcion |
@@ -169,6 +170,7 @@ spring.profiles.active=dev
 | Metodo | Endpoint | Descripcion |
 |--------|----------|-------------|
 | GET | /api/habitaciones | Listar todas |
+| GET | /api/habitaciones/{id} | Buscar por ID |
 | GET | /api/habitaciones/disponibles?fechaEntrada=X&fechaSalida=Y | Disponibilidad |
 | POST | /api/habitaciones | Crear |
 | PUT | /api/habitaciones/{id} | Actualizar |
@@ -194,15 +196,13 @@ spring.profiles.active=dev
 
 ## Swagger
 
-Documentacion interactiva de la API:
-
 ```
 http://localhost:8080/swagger-ui/index.html
 ```
 
 ---
 
-## Base de datos
+## Base de datos MySQL
 
 ```
 Host     : localhost
@@ -211,35 +211,43 @@ BD       : hoteldb
 Usuario  : root
 ```
 
+Las tablas se crean automaticamente al iniciar el proyecto.
+
+---
+
+## Frontend independiente
+
+Proyecto frontend separado en HTML, CSS y JavaScript puro.
+Consume la API REST del backend. CRUD completo de clientes.
+
+```
+Repositorio : https://github.com/Veronicaosoriodurang/hotel-frontend
+Uso         : Abrir index.html con el backend corriendo en localhost:8080
+```
+
 ---
 
 ## Control de versiones
 
 ```
-Repositorio: https://github.com/Veronicaosoriodurang/demo
-
-Ramas:
-  main              Rama principal
-  develop           Rama de desarrollo
-  feature/api-hotel Rama de la API REST
+Repositorio : https://github.com/Veronicaosoriodurang/demo
 ```
 
----
-
-## Frontend
-
-El frontend es un proyecto independiente. Para usarlo:
-
-**Continuar en:** [hotel-frontend](https://github.com/Veronicaosoriodurang/hotel-frontend)
+Ramas:
+```
+main              Rama principal estable
+develop           Rama de desarrollo
+feature/api-hotel Rama de implementacion de la API REST
+```
 
 ---
 
 ## Autora
 
-| | |
-|-|-|
-| Nombre | Veronica Osorio Durango |
-| Materia | Programacion de Software |
-| Programa | Tecnologia en Desarrollo de Software |
-| Institucion | ITM |
-| Periodo | 2026-1 |
+```
+Veronica Osorio Durango
+Materia   : Programacion de Software
+Programa  : Tecnologia en Desarrollo de Software
+Institucion: ITM
+Periodo   : 2026-1
+```
